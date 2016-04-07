@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Finance App DJVP</string>
+    <string name="search_result">Search Result</string>
+    <string name="action_settings">Settings</string>
+    <string name="search_hint">Type and Search</string>
+    <string name="menu_search">Search</string>
 </resources>
