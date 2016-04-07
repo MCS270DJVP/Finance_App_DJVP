@@ -2,6 +2,9 @@
     <string name="app_name">Finance App DJVP</string>
     <string name="search_result">Search Result</string>
     <string name="action_settings">Settings</string>
-    <string name="search_hint">Type and Search</string>
+    <string name="search_hint">Enter Fund Abbreviation</string>
     <string name="menu_search">Search</string>
+    <string name="new_stock">New</string>
+    <string name="remove_stock">Remove</string>
+    <string name="search_question">What stock would you like to search?</string>
 </resources>
