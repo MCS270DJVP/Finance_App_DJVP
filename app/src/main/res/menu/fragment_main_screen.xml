@@ -3,11 +3,9 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
       <item
-          android:id="@+id/menu_item_new_stock"
-          android:title="@string/new_stock"
-          app:showAsAction="ifRoom"/>
-      <item
           android:id="@+id/menu_item_remove_stock"
           android:title="@string/remove_stock"
+          android:icon="@drawable/ic_remove_ticker"
           app:showAsAction="ifRoom" />
+
 </menu>
