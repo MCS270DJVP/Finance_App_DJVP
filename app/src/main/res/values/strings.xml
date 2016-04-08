@@ -6,5 +6,7 @@
     <string name="menu_search">Search</string>
     <string name="new_stock">New</string>
     <string name="remove_stock">Remove</string>
-    <string name="search_question">What stock would you like to search?</string>
+    <string name="search_question">Enter Mutual Fund Ticker</string>
+    <string name="calculate_button">Calculate</string>
+    <string name="ok_button">Ok</string>
 </resources>
