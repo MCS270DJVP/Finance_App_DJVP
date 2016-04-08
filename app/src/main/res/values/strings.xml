@@ -9,4 +9,5 @@
     <string name="search_question">Enter Mutual Fund Ticker</string>
     <string name="calculate_button">Calculate</string>
     <string name="ok_button">Ok</string>
+    <string name="add_button">Add</string>
 </resources>
