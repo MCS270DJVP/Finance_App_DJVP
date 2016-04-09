@@ -21,6 +21,7 @@ public class Fund {
         mId = newId;
     }
     //get name of the fund
+    /*Dennis: change the getTitle to getTicker*/
     public String getTitle() {
         return mTitle;
     }
