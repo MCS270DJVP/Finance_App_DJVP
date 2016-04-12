@@ -1,5 +1,6 @@
 package com.bignerdranch.android.financeappdjvp;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 /**
@@ -8,10 +9,20 @@ import java.util.UUID;
 public class Fund {
     private String mTitle;
     private UUID mId;
-    //Questions: Properties of a fund
+    private BigDecimal mPrice;
+
     public Fund(String title) {
         mTitle = title;
     }
+
+    public BigDecimal getPrice() {
+        return mPrice;
+    }
+
+    public void setPrice(BigDecimal mPrice) {
+        this.mPrice = mPrice;
+    }
+
     //get Id
     public UUID getId() {
         return mId;
@@ -29,4 +40,6 @@ public class Fund {
     public void setTitle(String newTitle) {
         mTitle = newTitle;
     }
+
+
 }
