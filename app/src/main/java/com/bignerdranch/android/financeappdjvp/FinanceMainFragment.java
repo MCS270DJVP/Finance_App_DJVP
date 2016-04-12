@@ -104,11 +104,12 @@ public class FinanceMainFragment extends Fragment {
         public void bindFund(Fund fund) {
             mFund = fund;
             /*set the name and the title of the text view*/
-            mTitleView.setText(mFund.getTitle());
-            if (mFund.getPrice()!=null) {
-                mPriceView.setText(mFund.getPrice().toString());
+            mTitleView.setText(fund.getTitle());
+            if (fund.getPrice()==null) {
+                mPriceView.setText("The price is not available");
             }
-            else mPriceView.setText("Price not available");
+            else
+            mPriceView.setText(fund.getPrice().toString());
         }
     }
     /*Wire up the fundHolder to the view using the adapter*/
@@ -160,7 +161,7 @@ public class FinanceMainFragment extends Fragment {
                     Log.i(TAG,"Successfully execute");
                     stock= YahooFinance.get(mStockTitle);
                     Fund fund = new Fund(mStockTitle);
-                    mPrice = stock.getQuote(true).getPrice();
+                    mPrice = stock.getQuote().getPrice();
                     mFunds.add(fund);
                 } catch (IOException e) {
                     Log.i(TAG,"Fail to execute",e);
