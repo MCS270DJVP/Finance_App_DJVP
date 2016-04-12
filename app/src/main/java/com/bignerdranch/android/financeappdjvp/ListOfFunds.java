@@ -21,16 +21,21 @@ public class ListOfFunds {
     /*Construct an empty arrayList*/
     private ListOfFunds(Context context) {
         mFunds = new ArrayList<>();
-        /*This piece of code create a random list of funds only for testing*/
+        //This piece of code create a random list of funds only for testing
         for (int i = 0; i < 50; i++) {
-            Fund fund = new Fund("Fund "+i);
+            Fund fund = new Fund("Fund " + i);
             mFunds.add(fund);
         }
-        /*End of testing*/
+        //End of testing
     }
     /*Get list of funds*/
     public ArrayList<Fund> getFunds () {
         return mFunds;
+    }
+
+    /*Add the fund*/
+    public void addFund(Fund fund) {
+        mFunds.add(fund);
     }
     /*Get the fund with the specified UUID from the list*/
     public Fund getFund(UUID id) {
@@ -41,4 +46,5 @@ public class ListOfFunds {
         }
         return null;
     }
+
 }
