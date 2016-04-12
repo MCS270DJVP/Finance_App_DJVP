@@ -15,30 +15,38 @@
         android:id="@+id/fund_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="90dp"/>
-    <Button
-        android:id="@+id/add_button"
-        android:layout_width="75dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right|bottom"
-        android:layout_marginBottom="40dp"
-        android:text="@string/add_button"/>
+        android:layout_marginBottom="110dp"/>
 
-    <EditText
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="24dp"
-        android:layout_gravity="left|bottom"
-        android:layout_marginBottom="40dp"
-        android:text="@string/search_hint"/>
+        android:layout_gravity="center_vertical|center_horizontal|bottom"
+        android:layout_marginBottom="55dp"
+
+        android:orientation="horizontal" >
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="30dp"
+            android:hint="@string/search_hint"/>
+
+        <Button
+            android:id="@+id/add_button"
+            android:background="@drawable/cool_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add_button"/>
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/calculate_button"
+        android:background="@drawable/cool_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|bottom"
         android:text="@string/calculate_button"/>
-
 
 </FrameLayout>
 
