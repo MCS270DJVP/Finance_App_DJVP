@@ -15,6 +15,13 @@
         style="@android:style/Widget.Button"
         android:textSize="25dp"
         android:padding="5dp"/>
+    <!--This is only for testing-->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/list_stock_price"
+        android:gravity="right"
+        android:textSize="25dp"/>
 
     <!--Interface group adds more stuff here-->
 </RelativeLayout>
