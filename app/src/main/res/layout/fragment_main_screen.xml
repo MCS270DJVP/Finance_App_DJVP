@@ -15,17 +15,17 @@
         android:id="@+id/fund_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="110dp"/>
+        android:layout_marginBottom="115dp"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|center_horizontal|bottom"
         android:layout_marginBottom="55dp"
-
         android:orientation="horizontal" >
 
         <EditText
+            android:id="@+id/enter_ticker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="30dp"
@@ -36,6 +36,7 @@
             android:background="@drawable/cool_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/enter_ticker"
             android:text="@string/add_button"/>
 
     </LinearLayout>
