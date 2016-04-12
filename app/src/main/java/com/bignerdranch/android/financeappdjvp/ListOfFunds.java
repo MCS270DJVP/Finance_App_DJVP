@@ -22,10 +22,10 @@ public class ListOfFunds {
     private ListOfFunds(Context context) {
         mFunds = new ArrayList<>();
         //This piece of code create a random list of funds only for testing
-        for (int i = 0; i < 50; i++) {
+        /*for (int i = 0; i < 50; i++) {
             Fund fund = new Fund("Fund " + i);
             mFunds.add(fund);
-        }
+        }*/
         //End of testing
     }
     /*Get list of funds*/

@@ -75,6 +75,7 @@ public class FinanceMainFragment extends Fragment {
                 mSearchView = (EditText)view.findViewById(R.id.search_button_view);
                 /*Get the title input in the search view*/
                 mStockTitle = mSearchView.getText().toString();
+                new FetchYahooTask().execute();
                 updateUI();
             }
         });
@@ -104,7 +105,10 @@ public class FinanceMainFragment extends Fragment {
             mFund = fund;
             /*set the name and the title of the text view*/
             mTitleView.setText(mFund.getTitle());
-            //mPriceView.setText(mFund.getPrice().toString());
+            if (mFund.getPrice()!=null) {
+                mPriceView.setText(mFund.getPrice().toString());
+            }
+            else mPriceView.setText("Price not available");
         }
     }
     /*Wire up the fundHolder to the view using the adapter*/
@@ -140,7 +144,7 @@ public class FinanceMainFragment extends Fragment {
     }
 
     /*Run this task on the background*/
-    /*private class FetchYahooTask extends AsyncTask<Void,Void,ArrayList<Fund>> {
+    private class FetchYahooTask extends AsyncTask<Void,Void,ArrayList<Fund>> {
         Stock stock;
 
         private boolean isConnectedToInternet() {
@@ -169,8 +173,7 @@ public class FinanceMainFragment extends Fragment {
         protected void onPostExecute(ArrayList<Fund> funds) {
             updateUI();
         }
-
-    }*/
+    }
     /*update user interface*/
     private void updateUI() {
         /*Get all the funds from the list of funds*/
