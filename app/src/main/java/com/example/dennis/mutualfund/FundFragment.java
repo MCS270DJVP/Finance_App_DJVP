@@ -4,8 +4,6 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +24,7 @@ public class FundFragment extends Fragment{
 
     private EditText mTickerField;
     private Button mAddButton;
+    private Button mRemoveButton;
     private Button mCalculate;
 
     @Override
@@ -85,6 +84,15 @@ public class FundFragment extends Fragment{
             itemView.setOnClickListener(this);
 
             mTickerTextView = (TextView) itemView.findViewById(R.id.list_item_ticker_textview);
+
+            mRemoveButton = (Button) itemView.findViewById(R.id.remove);
+            mRemoveButton.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v){
+                    FundLab.get(getActivity()).deleteFund(mFund);
+                    updateUI();
+                }
+            });
             //mStockTextView = (TextView) itemView.findViewById(R.id.list_item_stock_value_textview); //TESTING ONLY
             //mWeightScrollerView = (Spinner) itemView.findViewById(R.id.list_item_weight_spinner);
         }

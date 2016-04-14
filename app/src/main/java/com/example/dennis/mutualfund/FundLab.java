@@ -15,6 +15,10 @@ public class FundLab {
         mFunds.add(a);
     }
 
+    public void deleteFund(Fund a){
+        mFunds.remove(a);
+    }
+
     public static FundLab get(Context context){
         if (sFundLab == null) {
             sFundLab = new FundLab(context);

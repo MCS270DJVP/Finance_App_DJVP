@@ -14,11 +14,11 @@
         android:textStyle="bold"
         android:layout_weight="1"/>
 
-    <TextView
-        android:id="@+id/list_item_stock_value_textview"
+    <Button
+        android:id="@+id/remove"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:hint="TESTING PRICE "/>
+        android:hint="Delete"/>
 
     <Spinner
         android:id="@+id/list_item_weight_spinner"
