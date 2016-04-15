@@ -11,14 +11,6 @@ public class FundLab {
 
     private List<Fund> mFunds;
 
-    public void addFund(Fund a){
-        mFunds.add(a);
-    }
-
-    public void deleteFund(Fund a){
-        mFunds.remove(a);
-    }
-
     public static FundLab get(Context context){
         if (sFundLab == null) {
             sFundLab = new FundLab(context);
@@ -41,5 +33,12 @@ public class FundLab {
             }
         }
         return null;
+    }
+    public void addFund(Fund a){
+        mFunds.add(a);
+    }
+
+    public void deleteFund(Fund a){
+        mFunds.remove(a);
     }
 }
