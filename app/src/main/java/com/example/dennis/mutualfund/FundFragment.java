@@ -1,5 +1,6 @@
 package com.example.dennis.mutualfund;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -59,12 +60,21 @@ public class FundFragment extends Fragment{
         mAddButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                mTickerTitle = mTickerField.getText().toString();
-                if (!isEmpty(mTickerField) && isValidedString(mTickerTitle)) {
-                    new FetchYahooTask().execute();
-                    mTickerField.setText("");
+                if (isConnectedtoInternet()) {
+                    mTickerTitle = mTickerField.getText().toString().trim();
+                    if (!isEmpty(mTickerField) && isValidString(mTickerTitle)) {
+                        new FetchYahooTask().execute();
+                        mTickerField.setText("");
+                    } else if (!isValidString(mTickerTitle)){
+                        dialog("Invalid ticker");
+                        mTickerField.setText("");
+                    }
+                }
+                else {
+                    dialog("No internet connection");
                 }
             }
+
         });
         mCalculate = (Button) v.findViewById(R.id.calculate_button);
         updateUI();
@@ -94,7 +104,6 @@ public class FundFragment extends Fragment{
             if (mFund.getStockValue()!=null ) {
                 mPriceField.setText(mFund.getStockValue().toString());
             }
-            else mPriceField.setText("NA");
         }
     }
     private class FundAdapter extends RecyclerView.Adapter<FundHolder> {
@@ -129,10 +138,6 @@ public class FundFragment extends Fragment{
                 stock= YahooFinance.get(mTickerTitle);
                 mStockPrice = stock.getQuote().getPrice();
                 /*Create a new fund with data fetched from the internet*/
-                Fund fund = new Fund();
-                fund.setStockValue(mStockPrice);
-                fund.setTicker(mTickerTitle);
-                mFunds.add(fund);
             } catch (IOException e) {
                 Log.i(TAG,"Fail to execute",e);
             }
@@ -140,6 +145,17 @@ public class FundFragment extends Fragment{
         }
         @Override
         protected void onPostExecute(List<Fund> funds) {
+            /*after the background thread is executed, updating the mFunds*/
+            if (mStockPrice !=null) {
+                Fund fund = new Fund();
+                fund.setTicker(mTickerTitle);
+                fund.setStockValue(mStockPrice);
+                mFunds.add(fund);
+                updateUI();
+            }
+            else {
+                dialog("Invalid ticker");
+            }
             updateUI();
         }
     }
@@ -158,12 +174,14 @@ public class FundFragment extends Fragment{
         }
         mFundRecyclerView.setAdapter(mFundAdapter);
     }
-    private boolean isConnectedToInternet() {
+    /*check if there is internet connection*/
+    private boolean isConnectedtoInternet() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo !=null &&  activeNetworkInfo.isConnected();
     }
-    private boolean isValidedString(String str) {
+    /*check if the string contains no white space*/
+    private boolean isValidString(String str) {
         for (int i = 0; i < str.length();i++) {
             if (str.charAt(i) == ' ') {
                 return false;
@@ -171,11 +189,19 @@ public class FundFragment extends Fragment{
         }
         return true;
     }
+    /*check if the input ticker is empty*/
     private boolean isEmpty (EditText text) {
         if (text.getText().toString().length() > 0) {
             return false;
         }
         else return true;
+    }
+    /*if the ticker is invalid, pop up a dialog noticing about invalid ticker*/
+    private void dialog(String message) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+        dialog.setTitle(message);
+        dialog.setPositiveButton(R.string.positive_button,null);
+        dialog.show();
     }
 
 }
