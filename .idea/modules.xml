@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/Finance_App_DJVP.iml" filepath="$PROJECT_DIR$/Finance_App_DJVP.iml" />
       <module fileurl="file://$PROJECT_DIR$/MutualFund.iml" filepath="$PROJECT_DIR$/MutualFund.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>

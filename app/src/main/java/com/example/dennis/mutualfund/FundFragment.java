@@ -48,6 +48,7 @@ public class FundFragment extends Fragment{
     @Override
     public void onCreate(Bundle savedInstancestate){
         super.onCreate(savedInstancestate);
+        mFunds = FundLab.get(getActivity()).getFunds();
     }
 
     @Override
@@ -80,6 +81,13 @@ public class FundFragment extends Fragment{
         updateUI();
         return v;
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        FundLab.get(getActivity()).updateFund(mFund);
+    }
+
     private class FundHolder extends RecyclerView.ViewHolder {
         private Fund mFund;
         private TextView mTickerTextView;

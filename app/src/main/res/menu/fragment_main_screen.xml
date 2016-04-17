@@ -5,7 +5,7 @@
       <item
           android:id="@+id/menu_item_remove_stock"
           android:title="@string/remove_stock"
-          android:icon="@drawable/ic_remove_ticker"
+
           app:showAsAction="ifRoom" />
 
 </menu>
