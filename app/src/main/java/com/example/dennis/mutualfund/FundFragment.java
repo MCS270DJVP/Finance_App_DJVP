@@ -2,6 +2,7 @@ package com.example.dennis.mutualfund;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -16,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,7 +38,7 @@ public class FundFragment extends Fragment{
     private EditText mTickerField;
     private TextView mPriceField;
     private Button mAddButton;
-    private Button mRemoveButton;
+    private ImageButton mRemoveButton;
     private Button mCalculate;
     private static final String TAG = "MUTUAL_FUND";
     private FundAdapter mFundAdapter;
@@ -80,6 +82,7 @@ public class FundFragment extends Fragment{
         updateUI();
         return v;
     }
+
     private class FundHolder extends RecyclerView.ViewHolder {
         private Fund mFund;
         private TextView mTickerTextView;
@@ -88,15 +91,31 @@ public class FundFragment extends Fragment{
             super(itemView);
             mTickerTextView = (TextView) itemView.findViewById(R.id.list_item_ticker_textview);
             mPriceField = (TextView) itemView.findViewById(R.id.price_display);
-            mRemoveButton = (Button) itemView.findViewById(R.id.remove);
+            mRemoveButton = (ImageButton) itemView.findViewById(R.id.remove);
             mRemoveButton.setOnClickListener(new View.OnClickListener(){
-                @Override
                 public void onClick(View v){
-                    mFunds.remove(mFund);
-                    updateUI();
+                    if (mFund != null) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        builder.setTitle("Deletion Alert");
+                        builder.setMessage("Do you really want to delete this?");
+                        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Toast.makeText(getActivity(), "Fund Deleted!", Toast.LENGTH_SHORT).show();
+                                FundLab.get(getActivity()).deleteFund(mFund);
+                                updateUI();
+                            }
+                        });
+                        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+                        builder.show();
+                    }
                 }
             });
         }
+
         public void bindFund(Fund fund){
             mFund = fund;
             mTickerTextView.setText(mFund.getTicker().toUpperCase());
@@ -106,6 +125,7 @@ public class FundFragment extends Fragment{
             }
         }
     }
+
     private class FundAdapter extends RecyclerView.Adapter<FundHolder> {
         private List<Fund> mFunds;
         public FundAdapter(List<Fund> funds) {
@@ -205,5 +225,3 @@ public class FundFragment extends Fragment{
     }
 
 }
-
-
