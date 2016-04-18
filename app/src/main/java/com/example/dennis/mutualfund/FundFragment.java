@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.AdapterView.OnItemSelectedListener;
 
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -81,12 +82,12 @@ public class FundFragment extends Fragment{
         updateUI();
         return v;
     }
-
+/*
     @Override
     public void onPause() {
         super.onPause();
         FundLab.get(getActivity()).updateFund(mFund);
-    }
+    }*/
 
     private class FundHolder extends RecyclerView.ViewHolder {
         private Fund mFund;
@@ -101,9 +102,12 @@ public class FundFragment extends Fragment{
                 @Override
                 public void onClick(View v){
                     mFunds.remove(mFund);
+                    FundLab.get(getActivity()).deleteFund(mFund);
                     updateUI();
                 }
             });
+            mWeightScrollerView = (Spinner) itemView.findViewById(R.id.list_item_weight_spinner);
+
         }
         public void bindFund(Fund fund){
             mFund = fund;
@@ -158,7 +162,8 @@ public class FundFragment extends Fragment{
                 Fund fund = new Fund();
                 fund.setTicker(mTickerTitle);
                 fund.setStockValue(mStockPrice);
-                mFunds.add(fund);
+               // mFunds.add(fund);
+                FundLab.get(getActivity()).addFund(fund);
                 updateUI();
             }
             else {
@@ -170,7 +175,8 @@ public class FundFragment extends Fragment{
     /*update user interface*/
     private void updateUI() {
         /*set the fund */
-        mFunds = FundLab.get(getActivity()).getFunds();
+        FundLab fundLab = FundLab.get(getActivity());
+        mFunds = fundLab.getFunds();
 
         if (mFundAdapter == null) {
             mFundAdapter = new FundAdapter(mFunds);

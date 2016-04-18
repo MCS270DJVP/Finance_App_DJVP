@@ -9,6 +9,7 @@ public class Fund {
     private String mTicker;
     private BigDecimal mStockPrice;
     private int weight;
+
     public Fund() {
         mId = UUID.randomUUID();
     }

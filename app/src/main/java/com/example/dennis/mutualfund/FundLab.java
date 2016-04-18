@@ -39,20 +39,20 @@ public class FundLab {
     }
 
     public List<Fund> getFunds() {
-        List<Fund> crimes = new ArrayList<>();
+        List<Fund> funds = new ArrayList<>();
 
         FundCursorWrapper cursor = queryFunds(null, null);
 
         try {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
-                crimes.add(cursor.getFund());
+                funds.add(cursor.getFund());
                 cursor.moveToNext();
             }
         } finally {
             cursor.close();
         }
-        return crimes;
+        return funds;
     }
 
     public void addFund(Fund c) {
