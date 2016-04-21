@@ -1,13 +1,18 @@
 package com.example.dennis.mutualfund;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
-public class Fund {
+import yahoofinance.histquotes.HistoricalQuote;
+
+public class Fund implements Serializable {
 
     private UUID mId;
     private String mTicker;
     private BigDecimal mStockPrice;
+    private List<HistoricalQuote> mQuotes;
 
     public Fund() {
         mId = UUID.randomUUID();
@@ -35,5 +40,13 @@ public class Fund {
 
     public void setStockValue(BigDecimal stockPrice) {
         mStockPrice = stockPrice;
+    }
+
+    public void setHistoricalQuotes(List<HistoricalQuote> quotes) {
+        mQuotes = quotes;
+    }
+
+    public List<HistoricalQuote> getHistoricalQuotes() {
+        return mQuotes;
     }
 }

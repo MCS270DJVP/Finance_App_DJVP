@@ -1,13 +1,16 @@
 package com.example.dennis.mutualfund;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -65,8 +68,14 @@ public class FundFragment extends Fragment{
                 if (isConnectedtoInternet()) {
                     mTickerTitle = mTickerField.getText().toString().trim();
                     if (!isEmpty(mTickerField) && isValidString(mTickerTitle)) {
-                        new YahooFetch(getActivity(),mTickerTitle).execute();
-                        updateUI();
+                        new YahooFetch(getActivity(), mTickerTitle,
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        updateUI();
+                                    }
+                                }
+                        ).execute();
                         mTickerField.setText("");
 
                     } else if (!isValidString(mTickerTitle)){
@@ -82,12 +91,13 @@ public class FundFragment extends Fragment{
         return v;
     }
 
-    private class FundHolder extends RecyclerView.ViewHolder {
+    private class FundHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private Fund mFund;
         private TextView mTickerTextView;
         private Spinner mWeightScrollerView;
         public FundHolder(View itemView){
             super(itemView);
+            itemView.setOnClickListener(this);
             mTickerTextView = (TextView) itemView.findViewById(R.id.list_item_ticker_textview);
             mPriceField = (TextView) itemView.findViewById(R.id.price_display);
             mRemoveButton = (ImageButton) itemView.findViewById(R.id.remove);
@@ -122,6 +132,13 @@ public class FundFragment extends Fragment{
             if (mFund.getStockValue()!=null ) {
                 mPriceField.setText(mFund.getStockValue().toString());
             }
+        }
+
+        @Override
+        public void onClick(View v) {
+            FragmentManager manager = getFragmentManager();
+            HistoricalPricesDialogFragment dialog = HistoricalPricesDialogFragment.newInstance(mFund);
+            dialog.show(manager,"NULL");
         }
     }
 
