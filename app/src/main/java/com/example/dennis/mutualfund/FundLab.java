@@ -38,6 +38,7 @@ public class FundLab {
 
     }
 
+    /* The function we call every time we update our UI */
     public List<Fund> getFunds() {
         List<Fund> funds = new ArrayList<>();
 
@@ -64,7 +65,7 @@ public class FundLab {
         mDatabase.delete(FundTable.NAME, FundTable.Cols.UUID + " = ?",
                 new String[]{c.getId().toString()});
     }
-
+    /*Not currently useful, but I'm leaving it in here for now*/
     public Fund getFund(UUID id) {
         FundCursorWrapper cursor = queryFunds(
                 FundTable.Cols.UUID + " = ?",
@@ -83,6 +84,7 @@ public class FundLab {
         }
     }
 
+    /*Not currently useful, but I'm leaving it in here for now*/
     public void updateFund(Fund fund) {
         String uuidString = fund.getId().toString();
         ContentValues values = getContentValues(fund);

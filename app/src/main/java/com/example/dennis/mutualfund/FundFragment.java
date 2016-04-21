@@ -35,7 +35,6 @@ public class FundFragment extends Fragment{
     private Fund mFund;
     private RecyclerView mFundRecyclerView;
     private EditText mTickerField;
-    private TextView mPriceField;
     private Button mAddButton;
     private Button mRemoveButton;
     private Button mCalculate;
@@ -82,12 +81,6 @@ public class FundFragment extends Fragment{
         updateUI();
         return v;
     }
-/*
-    @Override
-    public void onPause() {
-        super.onPause();
-        FundLab.get(getActivity()).updateFund(mFund);
-    }*/
 
     private class FundHolder extends RecyclerView.ViewHolder {
         private Fund mFund;
@@ -96,7 +89,6 @@ public class FundFragment extends Fragment{
         public FundHolder(View itemView){
             super(itemView);
             mTickerTextView = (TextView) itemView.findViewById(R.id.list_item_ticker_textview);
-            mPriceField = (TextView) itemView.findViewById(R.id.price_display);
             mRemoveButton = (Button) itemView.findViewById(R.id.remove);
             mRemoveButton.setOnClickListener(new View.OnClickListener(){
                 @Override
@@ -112,10 +104,6 @@ public class FundFragment extends Fragment{
         public void bindFund(Fund fund){
             mFund = fund;
             mTickerTextView.setText(mFund.getTicker().toUpperCase());
-
-            if (mFund.getStockValue()!=null ) {
-                mPriceField.setText(mFund.getStockValue().toString());
-            }
         }
     }
     private class FundAdapter extends RecyclerView.Adapter<FundHolder> {
@@ -146,10 +134,10 @@ public class FundFragment extends Fragment{
         @Override
         protected List<Fund> doInBackground(Void... params) {
             try {
+                // Loads the fund's price to confirm that the ticker is valid
                 Log.i(TAG,"Successfully execute");
                 stock= YahooFinance.get(mTickerTitle);
                 mStockPrice = stock.getQuote().getPrice();
-                /*Create a new fund with data fetched from the internet*/
             } catch (IOException e) {
                 Log.i(TAG,"Fail to execute",e);
             }
@@ -157,12 +145,10 @@ public class FundFragment extends Fragment{
         }
         @Override
         protected void onPostExecute(List<Fund> funds) {
-            /*after the background thread is executed, updating the mFunds*/
+            /*after the background thread is executed, updating the database and mFunds*/
             if (mStockPrice !=null) {
                 Fund fund = new Fund();
                 fund.setTicker(mTickerTitle);
-                fund.setStockValue(mStockPrice);
-               // mFunds.add(fund);
                 FundLab.get(getActivity()).addFund(fund);
                 updateUI();
             }
