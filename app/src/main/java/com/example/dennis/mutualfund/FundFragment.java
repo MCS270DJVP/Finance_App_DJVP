@@ -1,19 +1,15 @@
 package com.example.dennis.mutualfund;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,15 +21,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
+import com.example.dennis.mutualfund.YahooFetch.FetchDataForAdd;
+import com.example.dennis.mutualfund.YahooFetch.FetchDataForCalculate;
+import com.example.dennis.mutualfund.YahooFetch.FetchDataForGraph;
 
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
-
-import yahoofinance.Stock;
-import yahoofinance.YahooFinance;
 
 public class FundFragment extends Fragment{
     private Fund mFund;
@@ -68,7 +61,7 @@ public class FundFragment extends Fragment{
                 if (isConnectedtoInternet()) {
                     mTickerTitle = mTickerField.getText().toString().trim();
                     if (!isEmpty(mTickerField) && isValidString(mTickerTitle)) {
-                        new YahooFetch(getActivity(), mTickerTitle,
+                        new FetchDataForAdd(getActivity(), mTickerTitle,
                                 new Runnable() {
                                     @Override
                                     public void run() {
@@ -87,6 +80,18 @@ public class FundFragment extends Fragment{
 
         });
         mCalculate = (Button) v.findViewById(R.id.calculate_button);
+        mCalculate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new FetchDataForCalculate(getActivity(), new Runnable() {
+                    @Override
+                    public void run() {
+                        /*including the codes for the comparing recylcerView*/
+
+                    }
+                }).execute();
+            }
+        });
         updateUI();
         return v;
     }
@@ -136,9 +141,7 @@ public class FundFragment extends Fragment{
 
         @Override
         public void onClick(View v) {
-            FragmentManager manager = getFragmentManager();
-            HistoricalPricesDialogFragment dialog = HistoricalPricesDialogFragment.newInstance(mFund);
-            dialog.show(manager,"NULL");
+            new FetchDataForGraph(getActivity(),getFragmentManager(),mFund).execute();
         }
     }
 

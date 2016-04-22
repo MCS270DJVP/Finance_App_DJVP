@@ -14,20 +14,18 @@ import com.jjoe64.graphview.series.LineGraphSeries;
 import java.math.BigDecimal;
 import java.util.List;
 
-import yahoofinance.histquotes.HistoricalQuote;
-
 /**
  * Created by huyviet1995 on 4/21/16.
  */
-public class HistoricalPricesDialogFragment extends DialogFragment  {
+public class GraphDialogFragment extends DialogFragment  {
     private static final String ARG_QUOTE = "QUOTE";
     private Fund mFund;
     private List<BigDecimal> mHistoricalPrices;
 
-    public static HistoricalPricesDialogFragment newInstance(Fund fund) {
+    public static GraphDialogFragment newInstance(Fund fund) {
         Bundle args = new Bundle();
         args.putSerializable(ARG_QUOTE,fund);
-        HistoricalPricesDialogFragment fragment = new HistoricalPricesDialogFragment();
+        GraphDialogFragment fragment = new GraphDialogFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -36,7 +34,7 @@ public class HistoricalPricesDialogFragment extends DialogFragment  {
 
         View v = LayoutInflater.from(getActivity()).inflate(R.layout.line_graph_view,null);
         mFund = (Fund) getArguments().getSerializable(ARG_QUOTE);
-        mHistoricalPrices = mFund.getmHistoricalPrices();
+        mHistoricalPrices = mFund.getHistoricalPrices();
 
         GraphView graph = (GraphView) v.findViewById(R.id.graph);
         LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>();

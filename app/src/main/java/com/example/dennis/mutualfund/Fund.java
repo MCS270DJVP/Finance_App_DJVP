@@ -13,10 +13,13 @@ public class Fund implements Serializable {
     private String mTicker;
     private BigDecimal mStockPrice;
     private List<BigDecimal> mHistoricalPrices;
+    private int mWeight;
 
     public Fund() {
         mId = UUID.randomUUID();
     }
+
+    public Fund(UUID id) {mId = id;}
 
     public UUID getId() {
         return mId;
@@ -46,7 +49,16 @@ public class Fund implements Serializable {
         mHistoricalPrices = prices;
     }
 
-    public List<BigDecimal> getmHistoricalPrices() {
+    public List<BigDecimal> getHistoricalPrices() {
         return mHistoricalPrices;
     }
+
+    public int getWeight() {
+        return mWeight;
+    }
+
+    public void setWeight(int newWeight) {
+        mWeight= newWeight;
+    }
+
 }

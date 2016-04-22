@@ -1,9 +1,13 @@
-package com.example.dennis.mutualfund;
+package com.example.dennis.mutualfund.YahooFetch;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+
+import com.example.dennis.mutualfund.Fund;
+import com.example.dennis.mutualfund.FundLab;
+import com.example.dennis.mutualfund.R;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -20,7 +24,7 @@ import yahoofinance.histquotes.Interval;
 /**
  * Created by huyviet1995 on 4/19/16.
  */
-public class YahooFetch extends AsyncTask<String,Void,Fund> {
+public class FetchDataForAdd extends AsyncTask<String,Void,Fund> {
     private String mTickerTitle;
     private List<HistoricalQuote> mQuotes;
     private List<BigDecimal> mHistoricalPrices;
@@ -29,7 +33,7 @@ public class YahooFetch extends AsyncTask<String,Void,Fund> {
     private Runnable mContinuation;
 
     private static final String TAG = "TAG";
-    public YahooFetch(Context context, String tickerTitle, Runnable continuation) {
+    public FetchDataForAdd(Context context, String tickerTitle, Runnable continuation) {
         mTickerTitle = tickerTitle;
         mContext = context;
         mContinuation = continuation;
@@ -40,30 +44,13 @@ public class YahooFetch extends AsyncTask<String,Void,Fund> {
 
         try {
             Log.i(TAG,"Successfully execute");
-
-
             /*pulling down historical data using Yahoo API*/
-            Calendar from = Calendar.getInstance();
-            Calendar to = Calendar.getInstance();
-            from.add(Calendar.YEAR, -1);
-            /*get the historical quotes*/
-            Stock stocks =YahooFinance.get(mTickerTitle,from,to, Interval.DAILY);
-            mQuotes = stocks.getHistory();
-
             /*loop through the quotes to get the close price of the day*/
-            mHistoricalPrices = new ArrayList<BigDecimal>();
-            for (HistoricalQuote quote: mQuotes) {
-                if (quote!=null) {
-                    mHistoricalPrices.add(quote.getAdjClose());
-                }
-            }
-
-            Stock stock = YahooFinance.get(mTickerTitle);
-            mStockPrice = stock.getQuote().getPrice();
             fund = new Fund();
             fund.setTicker(mTickerTitle);
-            fund.setHistoricalPrices(mHistoricalPrices);
-                /*Create a new fund with data fetched from the internet*/
+            Stock stock = YahooFinance.get(mTickerTitle);
+            mStockPrice = stock.getQuote().getPrice();
+            fund.setStockValue(mStockPrice);
         } catch (IOException e) {
             Log.i(TAG,"Fail to execute",e);
         }
@@ -71,7 +58,6 @@ public class YahooFetch extends AsyncTask<String,Void,Fund> {
     }
     @Override
     protected void onPostExecute(Fund fund) {
-            /*after the background thread is executed, updating the mFunds*/
         if (mStockPrice != null) {
             FundLab.get(mContext).addFund(fund);
             mContinuation.run();
