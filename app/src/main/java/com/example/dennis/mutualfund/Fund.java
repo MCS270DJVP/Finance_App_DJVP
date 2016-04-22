@@ -12,7 +12,7 @@ public class Fund implements Serializable {
     private UUID mId;
     private String mTicker;
     private BigDecimal mStockPrice;
-    private List<HistoricalQuote> mQuotes;
+    private List<BigDecimal> mHistoricalPrices;
 
     public Fund() {
         mId = UUID.randomUUID();
@@ -42,11 +42,11 @@ public class Fund implements Serializable {
         mStockPrice = stockPrice;
     }
 
-    public void setHistoricalQuotes(List<HistoricalQuote> quotes) {
-        mQuotes = quotes;
+    public void setHistoricalPrices(List<BigDecimal> prices) {
+        mHistoricalPrices = prices;
     }
 
-    public List<HistoricalQuote> getHistoricalQuotes() {
-        return mQuotes;
+    public List<BigDecimal> getmHistoricalPrices() {
+        return mHistoricalPrices;
     }
 }

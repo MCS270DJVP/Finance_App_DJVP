@@ -7,11 +7,13 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import yahoofinance.Stock;
 import yahoofinance.YahooFinance;
+import yahoofinance.histquotes.HistQuotesRequest;
 import yahoofinance.histquotes.HistoricalQuote;
 import yahoofinance.histquotes.Interval;
 
@@ -21,6 +23,7 @@ import yahoofinance.histquotes.Interval;
 public class YahooFetch extends AsyncTask<String,Void,Fund> {
     private String mTickerTitle;
     private List<HistoricalQuote> mQuotes;
+    private List<BigDecimal> mHistoricalPrices;
     private BigDecimal mStockPrice;
     private Context mContext;
     private Runnable mContinuation;
@@ -43,13 +46,23 @@ public class YahooFetch extends AsyncTask<String,Void,Fund> {
             Calendar from = Calendar.getInstance();
             Calendar to = Calendar.getInstance();
             from.add(Calendar.YEAR, -1);
+            /*get the historical quotes*/
             Stock stocks =YahooFinance.get(mTickerTitle,from,to, Interval.DAILY);
             mQuotes = stocks.getHistory();
+
+            /*loop through the quotes to get the close price of the day*/
+            mHistoricalPrices = new ArrayList<BigDecimal>();
+            for (HistoricalQuote quote: mQuotes) {
+                if (quote!=null) {
+                    mHistoricalPrices.add(quote.getAdjClose());
+                }
+            }
+
             Stock stock = YahooFinance.get(mTickerTitle);
             mStockPrice = stock.getQuote().getPrice();
             fund = new Fund();
             fund.setTicker(mTickerTitle);
-            fund.setHistoricalQuotes(mQuotes);
+            fund.setHistoricalPrices(mHistoricalPrices);
                 /*Create a new fund with data fetched from the internet*/
         } catch (IOException e) {
             Log.i(TAG,"Fail to execute",e);
