@@ -9,8 +9,12 @@ package com.example.dennis.mutualfund;
         import com.example.dennis.mutualfund.database.FundBaseHelper;
         import com.example.dennis.mutualfund.database.FundCursorWrapper;
         import com.example.dennis.mutualfund.database.FundDBSchema.FundTable;
+        import com.google.gson.Gson;
+        import com.google.gson.reflect.TypeToken;
 
         import java.io.File;
+        import java.lang.reflect.Array;
+        import java.lang.reflect.Type;
         import java.util.ArrayList;
         import java.util.List;
         import java.util.UUID;
@@ -84,22 +88,28 @@ public class FundLab {
             cursor.close();
         }
     }
-
-    /*Not currently useful, but I'm leaving it in here for now*/
     public void updateFund(Fund fund) {
         String uuidString = fund.getId().toString();
         ContentValues values = getContentValues(fund);
-
         mDatabase.update(FundTable.NAME, values,
                 FundTable.Cols.UUID + " = ?",
                 new String[] {uuidString});
     }
-
     private static ContentValues getContentValues(Fund fund) {
         ContentValues values = new ContentValues();
         values.put(FundTable.Cols.UUID, fund.getId().toString());
         values.put(FundTable.Cols.TICKER, fund.getTicker());
         values.put(FundTable.Cols.WEIGHT, fund.getWeight());
+        Gson gson = new Gson();
+        /*there is no way to put a list into the SQL database
+        * so the list of historical prices should be converted to a json object
+        * before being inserted in the database table
+        * Retrieve it by converting it back*/
+        String hpricesString = gson.toJson(fund.getHistoricalPrices());
+        values.put(FundTable.Cols.HPRICES, hpricesString);
+        /*Same method goes to calendar object*/
+        long currentTime = fund.getTime().getTimeInMillis();
+        values.put(FundTable.Cols.TIME, currentTime);
         return values;
     }
 

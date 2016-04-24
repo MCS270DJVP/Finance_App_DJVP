@@ -41,6 +41,7 @@ public class FundFragment extends Fragment{
     private BigDecimal mStockPrice;
     private String mTickerTitle;
     private List<Fund> mFunds;
+    private Spinner mSpinner;
 
 
     @Override
@@ -95,6 +96,11 @@ public class FundFragment extends Fragment{
         updateUI();
         return v;
     }
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putInt("SPINNER",mSpinner.getSelectedItemPosition());
+    }
 
     private class FundHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private Fund mFund;
@@ -106,6 +112,8 @@ public class FundFragment extends Fragment{
             mTickerTextView = (TextView) itemView.findViewById(R.id.list_item_ticker_textview);
             mPriceField = (TextView) itemView.findViewById(R.id.price_display);
             mRemoveButton = (ImageButton) itemView.findViewById(R.id.remove);
+
+            //mSpinner = (Spinner) itemView.findViewById(R.id.list_item_weight_spinner);
             mRemoveButton.setOnClickListener(new View.OnClickListener(){
                 public void onClick(View v){
                     if (mFund != null) {
@@ -133,12 +141,10 @@ public class FundFragment extends Fragment{
         public void bindFund(Fund fund){
             mFund = fund;
             mTickerTextView.setText(mFund.getTicker().toUpperCase());
-
             if (mFund.getStockValue()!=null ) {
                 mPriceField.setText(mFund.getStockValue().toString());
             }
         }
-
         @Override
         public void onClick(View v) {
             new FetchDataForGraph(getActivity(),getFragmentManager(),mFund).execute();

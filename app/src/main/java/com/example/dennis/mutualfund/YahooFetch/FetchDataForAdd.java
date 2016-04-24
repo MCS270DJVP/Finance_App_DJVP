@@ -28,8 +28,8 @@ public class FetchDataForAdd extends AsyncTask<String,Void,Fund> {
     private String mTickerTitle;
     private List<HistoricalQuote> mQuotes;
     private List<BigDecimal> mHistoricalPrices;
-    private BigDecimal mStockPrice;
     private Context mContext;
+    private Double mStockPrice;
     private Runnable mContinuation;
 
     private static final String TAG = "TAG";
@@ -49,8 +49,10 @@ public class FetchDataForAdd extends AsyncTask<String,Void,Fund> {
             fund = new Fund();
             fund.setTicker(mTickerTitle);
             Stock stock = YahooFinance.get(mTickerTitle);
-            mStockPrice = stock.getQuote().getPrice();
+            mStockPrice = stock.getQuote().getPrice().doubleValue();
             fund.setStockValue(mStockPrice);
+            /*set the time when the fund is added*/
+            fund.setTime(Calendar.getInstance());
         } catch (IOException e) {
             Log.i(TAG,"Fail to execute",e);
         }
@@ -60,6 +62,7 @@ public class FetchDataForAdd extends AsyncTask<String,Void,Fund> {
     protected void onPostExecute(Fund fund) {
         if (mStockPrice != null) {
             FundLab.get(mContext).addFund(fund);
+
             mContinuation.run();
         }
         else {

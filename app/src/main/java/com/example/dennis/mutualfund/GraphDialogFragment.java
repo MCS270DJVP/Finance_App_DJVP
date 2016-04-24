@@ -20,7 +20,7 @@ import java.util.List;
 public class GraphDialogFragment extends DialogFragment  {
     private static final String ARG_QUOTE = "QUOTE";
     private Fund mFund;
-    private List<BigDecimal> mHistoricalPrices;
+    private List<Double> mHistoricalPrices;
 
     public static GraphDialogFragment newInstance(Fund fund) {
         Bundle args = new Bundle();
@@ -41,7 +41,7 @@ public class GraphDialogFragment extends DialogFragment  {
         int count = 0;
         /*Looking for the max value of the mHistorical prices*/
         double max = 0;
-        double min = mHistoricalPrices.get(0).doubleValue();
+        double min = mHistoricalPrices.get(0);
         for (int i = 0; i < mHistoricalPrices.size();i++) {
             if (mHistoricalPrices.get(i)!=null && mHistoricalPrices.get(i).doubleValue() >max)
                 max = mHistoricalPrices.get(i).doubleValue();
@@ -55,10 +55,9 @@ public class GraphDialogFragment extends DialogFragment  {
                 size++;
             }
         }
-        for (BigDecimal price: mHistoricalPrices) {
+        for (Double price: mHistoricalPrices) {
             if (price !=null) {
-
-                series.appendData(new DataPoint(count,price.doubleValue()),true,size);
+                series.appendData(new DataPoint(count,price),true,size);
                 count++;
             }
         }
