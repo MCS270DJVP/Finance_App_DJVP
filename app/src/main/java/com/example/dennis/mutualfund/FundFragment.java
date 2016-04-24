@@ -5,12 +5,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,15 +21,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
+import com.example.dennis.mutualfund.YahooFetch.FetchDataForAdd;
+import com.example.dennis.mutualfund.YahooFetch.FetchDataForCalculate;
+import com.example.dennis.mutualfund.YahooFetch.FetchDataForGraph;
 
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
-
-import yahoofinance.Stock;
-import yahoofinance.YahooFinance;
 
 public class FundFragment extends Fragment{
     private Fund mFund;
@@ -45,6 +41,7 @@ public class FundFragment extends Fragment{
     private BigDecimal mStockPrice;
     private String mTickerTitle;
     private List<Fund> mFunds;
+    private Spinner mSpinner;
 
 
     @Override
@@ -65,33 +62,58 @@ public class FundFragment extends Fragment{
                 if (isConnectedtoInternet()) {
                     mTickerTitle = mTickerField.getText().toString().trim();
                     if (!isEmpty(mTickerField) && isValidString(mTickerTitle)) {
-                        new FetchYahooTask().execute();
+                        new FetchDataForAdd(getActivity(), mTickerTitle,
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        updateUI();
+                                    }
+                                }
+                        ).execute();
                         mTickerField.setText("");
+
                     } else if (!isValidString(mTickerTitle)){
-                        dialog("Invalid ticker");
                         mTickerField.setText("");
+                        updateUI();
                     }
-                }
-                else {
-                    dialog("No internet connection");
                 }
             }
 
         });
         mCalculate = (Button) v.findViewById(R.id.calculate_button);
+        mCalculate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new FetchDataForCalculate(getActivity(), new Runnable() {
+                    @Override
+                    public void run() {
+                        /*including the codes for the comparing recylcerView*/
+
+                    }
+                }).execute();
+            }
+        });
         updateUI();
         return v;
     }
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putInt("SPINNER",mSpinner.getSelectedItemPosition());
+    }
 
-    private class FundHolder extends RecyclerView.ViewHolder {
+    private class FundHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private Fund mFund;
         private TextView mTickerTextView;
         private Spinner mWeightScrollerView;
         public FundHolder(View itemView){
             super(itemView);
+            itemView.setOnClickListener(this);
             mTickerTextView = (TextView) itemView.findViewById(R.id.list_item_ticker_textview);
             mPriceField = (TextView) itemView.findViewById(R.id.price_display);
             mRemoveButton = (ImageButton) itemView.findViewById(R.id.remove);
+            
+            mSpinner = (Spinner) itemView.findViewById(R.id.list_item_weight_spinner);
             mRemoveButton.setOnClickListener(new View.OnClickListener(){
                 public void onClick(View v){
                     if (mFund != null) {
@@ -119,10 +141,13 @@ public class FundFragment extends Fragment{
         public void bindFund(Fund fund){
             mFund = fund;
             mTickerTextView.setText(mFund.getTicker().toUpperCase());
-
             if (mFund.getStockValue()!=null ) {
                 mPriceField.setText(mFund.getStockValue().toString());
             }
+        }
+        @Override
+        public void onClick(View v) {
+            new FetchDataForGraph(getActivity(),getFragmentManager(),mFund).execute();
         }
     }
 
@@ -149,41 +174,10 @@ public class FundFragment extends Fragment{
         /*if mFundAdapter is null then create a new mFundAdapter*/
         public void setFunds(List<Fund>funds) {mFunds = funds;}
     }
-    private class FetchYahooTask extends AsyncTask<Void,Void,List<Fund>> {
-        Stock stock;
-        @Override
-        protected List<Fund> doInBackground(Void... params) {
-            try {
-                Log.i(TAG,"Successfully execute");
-                stock= YahooFinance.get(mTickerTitle);
-                mStockPrice = stock.getQuote().getPrice();
-                /*Create a new fund with data fetched from the internet*/
-            } catch (IOException e) {
-                Log.i(TAG,"Fail to execute",e);
-            }
-            return mFunds;
-        }
-        @Override
-        protected void onPostExecute(List<Fund> funds) {
-            /*after the background thread is executed, updating the mFunds*/
-            if (mStockPrice !=null) {
-                Fund fund = new Fund();
-                fund.setTicker(mTickerTitle);
-                fund.setStockValue(mStockPrice);
-                mFunds.add(fund);
-                updateUI();
-            }
-            else {
-                dialog("Invalid ticker");
-            }
-            updateUI();
-        }
-    }
-    /*update user interface*/
-    private void updateUI() {
-        /*set the fund */
-        mFunds = FundLab.get(getActivity()).getFunds();
 
+    /*update user interface*/
+    public void updateUI() {
+        mFunds = FundLab.get(getActivity()).getFunds();
         if (mFundAdapter == null) {
             mFundAdapter = new FundAdapter(mFunds);
             mFundRecyclerView.setAdapter(mFundAdapter);
@@ -217,11 +211,6 @@ public class FundFragment extends Fragment{
         else return true;
     }
     /*if the ticker is invalid, pop up a dialog noticing about invalid ticker*/
-    private void dialog(String message) {
-        AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
-        dialog.setTitle(message);
-        dialog.setPositiveButton(R.string.positive_button,null);
-        dialog.show();
-    }
+
 
 }
