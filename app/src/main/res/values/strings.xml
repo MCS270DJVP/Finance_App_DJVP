@@ -4,7 +4,11 @@
     <string name="calculate_button">Calculate</string>
     <string name="add_button">Add</string>
     <string name="positive_button">OK</string>
+
     <string name="invalid_ticker">Invalid ticker</string>
+
+    <string name="remove_stock">Remove Stock</string>
+
 
     <string-array name="list_item_weight_spinner">
         <item>OverWeight</item>
