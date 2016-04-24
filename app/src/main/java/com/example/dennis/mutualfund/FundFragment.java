@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +43,8 @@ public class FundFragment extends Fragment{
     private String mTickerTitle;
     private List<Fund> mFunds;
     private Spinner mSpinner;
+    private static final String KEY_SPINNERS = "spinners";
+    private int[] savedWeights;
 
 
     @Override
@@ -61,7 +64,16 @@ public class FundFragment extends Fragment{
             public void onClick(View v) {
                 if (isConnectedtoInternet()) {
                     mTickerTitle = mTickerField.getText().toString().trim();
-                    if (!isEmpty(mTickerField) && isValidString(mTickerTitle)) {
+                    /* Checks for duplicate Ticker. Pops up dialog if Ticker already exists */
+                    if (isRepeatString(mTickerTitle)) {
+                        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+                        alert.setTitle("Repeat Fund");
+                        alert.setMessage("That fund is already in your list");
+                        alert.setPositiveButton("OK",null);
+                        alert.show();
+                        mTickerField.setText("");
+                        updateUI();
+                    } else if (!isEmpty(mTickerField) && isValidString(mTickerTitle)) {
                         new FetchDataForAdd(getActivity(), mTickerTitle,
                                 new Runnable() {
                                     @Override
@@ -93,13 +105,26 @@ public class FundFragment extends Fragment{
                 }).execute();
             }
         });
+
+        /* Stores Weight data from savedInstanceState for later use (for rotation) */
+        if (savedInstanceState != null) {
+            savedWeights = savedInstanceState.getIntArray(KEY_SPINNERS);
+        }
+
         updateUI();
         return v;
     }
+
+    /* Stores Weight data to initialize spinners upon rotation */
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putInt("SPINNER",mSpinner.getSelectedItemPosition());
+        Log.i(TAG, "onSaveInstanceState");
+        int[] spinners = new int[mFunds.size()];
+        for (int i = 0; i < mFunds.size(); i++) {
+            spinners[i] = (mFunds.get(i).getWeight());
+        }
+        savedInstanceState.putIntArray(KEY_SPINNERS, spinners);
     }
 
     private class FundHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -112,7 +137,6 @@ public class FundFragment extends Fragment{
             mTickerTextView = (TextView) itemView.findViewById(R.id.list_item_ticker_textview);
             mPriceField = (TextView) itemView.findViewById(R.id.price_display);
             mRemoveButton = (ImageButton) itemView.findViewById(R.id.remove);
-            
             mSpinner = (Spinner) itemView.findViewById(R.id.list_item_weight_spinner);
             mRemoveButton.setOnClickListener(new View.OnClickListener(){
                 public void onClick(View v){
@@ -140,6 +164,7 @@ public class FundFragment extends Fragment{
 
         public void bindFund(Fund fund){
             mFund = fund;
+            mSpinner.setSelection(mFund.getWeight());
             mTickerTextView.setText(mFund.getTicker().toUpperCase());
             if (mFund.getStockValue()!=null ) {
                 mPriceField.setText(mFund.getStockValue().toString());
@@ -155,6 +180,7 @@ public class FundFragment extends Fragment{
         private List<Fund> mFunds;
         public FundAdapter(List<Fund> funds) {
             mFunds = funds;
+
         }
         @Override
         public FundHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -181,6 +207,12 @@ public class FundFragment extends Fragment{
         if (mFundAdapter == null) {
             mFundAdapter = new FundAdapter(mFunds);
             mFundRecyclerView.setAdapter(mFundAdapter);
+            /*Fetches data from the savedInstanceState (for rotation) */
+            if (savedWeights != null) {
+                for (int i = 0; i < mFunds.size() -1; i++) {
+                    mFunds.get(i).setWeight(savedWeights[i]);
+                }
+            }
         }
         else {
             mFundAdapter.setFunds(mFunds);
@@ -203,6 +235,17 @@ public class FundFragment extends Fragment{
         }
         return true;
     }
+
+    /* Checks if a fund with the given Ticker exists in mFund */
+    private boolean isRepeatString(String str) {
+        for (int i = 0; i < mFunds.size();i++) {
+            if (str.equals(mFunds.get(i).getTicker())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /*check if the input ticker is empty*/
     private boolean isEmpty (EditText text) {
         if (text.getText().toString().length() > 0) {
