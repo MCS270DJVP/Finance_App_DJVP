@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -42,7 +43,7 @@ public class FundFragment extends Fragment{
     private BigDecimal mStockPrice;
     private String mTickerTitle;
     private List<Fund> mFunds;
-    private Spinner mSpinner;
+   //  private Spinner mSpinner;
     private static final String KEY_SPINNERS = "spinners";
     private int[] savedWeights;
 
@@ -130,14 +131,14 @@ public class FundFragment extends Fragment{
     private class FundHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private Fund mFund;
         private TextView mTickerTextView;
-        private Spinner mWeightScrollerView;
+        private Spinner mSpinner;
         public FundHolder(View itemView){
             super(itemView);
             itemView.setOnClickListener(this);
             mTickerTextView = (TextView) itemView.findViewById(R.id.list_item_ticker_textview);
             mPriceField = (TextView) itemView.findViewById(R.id.price_display);
             mRemoveButton = (ImageButton) itemView.findViewById(R.id.remove);
-            mSpinner = (Spinner) itemView.findViewById(R.id.list_item_weight_spinner);
+            //mSpinner = (Spinner) itemView.findViewById(R.id.list_item_weight_spinner);
             mRemoveButton.setOnClickListener(new View.OnClickListener(){
                 public void onClick(View v){
                     if (mFund != null) {
@@ -160,6 +161,23 @@ public class FundFragment extends Fragment{
                     }
                 }
             });
+
+            //updated spinner
+            mSpinner = (Spinner) itemView.findViewById(R.id.list_item_weight_spinner);
+            mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                public void onItemSelected(AdapterView<?> parent, View v, int pos, long id) {
+                    Object item = parent.getItemAtPosition(pos);
+                    String spin_value = item.toString();
+                    Toast.makeText(parent.getContext(), "Selected: " + spin_value, Toast.LENGTH_LONG).show();
+                    mFund.setWeight(pos);
+                    FundLab.get(getActivity()).updateFund(mFund);
+                }
+
+                public void onNothingSelected(AdapterView<?> parent) {
+                    return;
+                }
+            });
+
         }
 
         public void bindFund(Fund fund){
