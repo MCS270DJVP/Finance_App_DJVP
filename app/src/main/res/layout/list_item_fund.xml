@@ -1,45 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="#DAD8E8"
-    xmlns:tools="http://schemas.android.com/tools">
-    <!--Hold the title of the chosen fund-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/list_item_fund"
-        android:layout_width="140dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="2dp"
-        android:gravity="left"
-        android:paddingLeft="5dp"
-        android:paddingRight="10dp"
-        style="@android:style/Widget.Button"
-        android:textSize="30dp"
-        android:background="#DAD8E8"
-        android:shadowColor="#adff2f"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="16"
-        android:padding="5dp"/>
-    <!--This is only for testing-->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/list_stock_price"
-        android:gravity="right"
-        android:textSize="25dp"/>
+        android:layout_height="50dp"
+        android:orientation="horizontal">
 
-    <Spinner
-        android:id="@+id/spinner1"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@id/list_item_fund"
-        android:layout_toRightOf="@id/list_item_fund"
-        android:background="@android:drawable/btn_dropdown"
-        android:drawSelectorOnTop="true"
-        android:spinnerMode="dropdown"
-        android:gravity="center"
-        android:entries="@array/array_name"/>
+        <TextView
+            android:id="@+id/list_item_ticker_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
 
-</RelativeLayout>
+        <!--Testing: display the price on the internet-->
+
+        <TextView
+            android:id="@+id/price_display"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
+            android:layout_alignBaseline="@+id/list_item_ticker_textview"
+            android:paddingRight="5dp"
+            android:textSize="15sp"/>
+
+        <ImageButton
+            android:id="@+id/remove"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:hint="Delete"
+            android:src="@drawable/ic_remove_button"/>
+
+        <Spinner
+            android:id="@+id/list_item_weight_spinner"
+            android:layout_width="145dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="3dp"
+            android:layout_gravity="top|right"
+            android:background="@android:drawable/btn_dropdown"
+            android:entries="@array/list_item_weight_spinner"
+            android:layout_alignBaseline="@+id/remove"
+            android:spinnerMode="dropdown">
+        </Spinner>
+
+    </LinearLayout>
+
+</FrameLayout>
