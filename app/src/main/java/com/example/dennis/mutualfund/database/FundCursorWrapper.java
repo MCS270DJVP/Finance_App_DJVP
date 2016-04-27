@@ -3,21 +3,14 @@ package com.example.dennis.mutualfund.database;
 import android.database.Cursor;
 import android.database.CursorWrapper;
 
-import java.lang.reflect.Type;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import com.example.dennis.mutualfund.database.FundDBSchema.FundTable;
 import com.example.dennis.mutualfund.Fund;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-/**
- * Created by macowner on 4/16/16.
- */
 public class FundCursorWrapper extends CursorWrapper {
     public FundCursorWrapper(Cursor cursor) {
         super(cursor);

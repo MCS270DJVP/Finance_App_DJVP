@@ -11,23 +11,15 @@ import com.example.dennis.mutualfund.R;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import yahoofinance.Stock;
 import yahoofinance.YahooFinance;
-import yahoofinance.histquotes.HistQuotesRequest;
 import yahoofinance.histquotes.HistoricalQuote;
-import yahoofinance.histquotes.Interval;
 
-/**
- * Created by huyviet1995 on 4/19/16.
- */
 public class FetchDataForAdd extends AsyncTask<String,Void,Fund> {
     private String mTickerTitle;
-    private List<HistoricalQuote> mQuotes;
-    private List<BigDecimal> mHistoricalPrices;
     private Context mContext;
     private BigDecimal mStockPrice;
     private Runnable mContinuation;

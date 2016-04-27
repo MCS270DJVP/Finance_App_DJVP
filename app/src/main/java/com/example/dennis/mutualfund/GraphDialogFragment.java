@@ -11,12 +11,8 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.Viewport;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
-import java.math.BigDecimal;
 import java.util.List;
 
-/**
- * Created by huyviet1995 on 4/21/16.
- */
 public class GraphDialogFragment extends DialogFragment  {
     private static final String ARG_QUOTE = "QUOTE";
     private Fund mFund;

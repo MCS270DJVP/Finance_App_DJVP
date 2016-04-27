@@ -6,9 +6,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.dennis.mutualfund.database.FundDBSchema.FundTable;
 
-/**
- * Created by macowner on 4/16/16.
- */
 public class FundBaseHelper extends SQLiteOpenHelper {
     private static final int VERSION = 1;
     private static final String DATABASE_NAME = "crimeBase.db";

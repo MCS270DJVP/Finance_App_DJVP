@@ -1,6 +1,4 @@
 package com.example.dennis.mutualfund;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,10 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import com.google.gson.Gson;
-
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,13 +15,8 @@ import java.util.List;
 
 public class FundCalculatorFragment extends Fragment {
     private List<Fund> mFunds;
-    private static final String ARG_FUNDS = "FUNDS";
 
-    private TextView mTextView0;
-    private TextView mTextView1;
-    private TextView mTextView2;
     List<TickerComparisonObject> objects = new ArrayList<TickerComparisonObject>();
-    private RecyclerView.Adapter mAdapter;
     private RecyclerView mResultRecyclerView;
 
     @Override

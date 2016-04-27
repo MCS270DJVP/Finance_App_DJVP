@@ -10,24 +10,27 @@
         <TextView
             android:id="@+id/list_item_ticker_textview0"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
+            android:gravity="center"
             android:textSize="20sp"
             android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/list_item_ticker_textview1"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
+            android:gravity="center"
             android:textSize="20sp"
             android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/list_item_ticker_textview2"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
+            android:gravity="center"
             android:textSize="20sp"
             android:textStyle="bold"/>
 

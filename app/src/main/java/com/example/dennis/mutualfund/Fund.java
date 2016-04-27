@@ -1,7 +1,6 @@
 package com.example.dennis.mutualfund;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;

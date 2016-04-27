@@ -8,7 +8,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -28,11 +27,9 @@ import com.example.dennis.mutualfund.YahooFetch.FetchDataForAdd;
 import com.example.dennis.mutualfund.YahooFetch.FetchDataForCalculate;
 import com.example.dennis.mutualfund.YahooFetch.FetchDataForGraph;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 public class FundFragment extends Fragment{
-    private Fund mFund;
     private RecyclerView mFundRecyclerView;
     private EditText mTickerField;
     private TextView mPriceField;
@@ -41,10 +38,8 @@ public class FundFragment extends Fragment{
     private Button mCalculate;
     private static final String TAG = "MUTUAL_FUND";
     private FundAdapter mFundAdapter;
-    private BigDecimal mStockPrice;
     private String mTickerTitle;
     private List<Fund> mFunds;
-   //  private Spinner mSpinner;
     private static final String KEY_SPINNERS = "spinners";
     private int[] savedWeights;
 
@@ -65,7 +60,7 @@ public class FundFragment extends Fragment{
             @Override
             public void onClick(View v) {
                 if (isConnectedtoInternet()) {
-                    mTickerTitle = mTickerField.getText().toString().trim();
+                    mTickerTitle = mTickerField.getText().toString().trim().toUpperCase();
                     /* Checks for duplicate Ticker. Pops up dialog if Ticker already exists */
                     if (isRepeatString(mTickerTitle)) {
                         dialogMessage("Ticker already exists");
@@ -140,7 +135,6 @@ public class FundFragment extends Fragment{
             mTickerTextView = (TextView) itemView.findViewById(R.id.list_item_ticker_textview);
             mPriceField = (TextView) itemView.findViewById(R.id.price_display);
             mRemoveButton = (ImageButton) itemView.findViewById(R.id.remove);
-            //mSpinner = (Spinner) itemView.findViewById(R.id.list_item_weight_spinner);
             mRemoveButton.setOnClickListener(new View.OnClickListener(){
                 public void onClick(View v){
                     if (mFund != null) {
@@ -238,12 +232,14 @@ public class FundFragment extends Fragment{
         }
         mFundRecyclerView.setAdapter(mFundAdapter);
     }
+
     /*check if there is internet connection*/
     private boolean isConnectedtoInternet() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo !=null &&  activeNetworkInfo.isConnected();
     }
+
     /*check if the string contains no white space*/
     private boolean isValidString(String str) {
         for (int i = 0; i < str.length();i++) {
@@ -253,6 +249,7 @@ public class FundFragment extends Fragment{
         }
         return true;
     }
+
     /*check if the input ticker is empty*/
     private boolean isEmpty (EditText text) {
         if (text.getText().toString().length() > 0) {
@@ -260,6 +257,7 @@ public class FundFragment extends Fragment{
         }
         else return true;
     }
+
     /* Checks if a fund with the given Ticker exists in mFund */
     private boolean isRepeatString(String str) {
         for (int i = 0; i < mFunds.size();i++) {
@@ -269,6 +267,7 @@ public class FundFragment extends Fragment{
         }
         return false;
     }
+
     private void dialogMessage(String str) {
         AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
         alert.setTitle(str);
@@ -276,8 +275,4 @@ public class FundFragment extends Fragment{
         alert.show();
         updateUI();
     }
-
-    /*if the ticker is invalid, pop up a dialog noticing about invalid ticker*/
-
-
 }
