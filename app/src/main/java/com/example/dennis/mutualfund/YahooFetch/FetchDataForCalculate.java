@@ -70,10 +70,7 @@ public class FetchDataForCalculate extends AsyncTask<List<Fund>, Void,List<Fund>
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
             }
-
-
         }
         return mFunds;
     }

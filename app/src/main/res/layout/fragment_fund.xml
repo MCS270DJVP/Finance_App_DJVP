@@ -4,20 +4,12 @@
              android:layout_height="match_parent"
              android:orientation="vertical"
     >
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="40dp"
-        />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom">
+        android:layout_gravity="top">
 
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/ticker_text"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -37,5 +29,11 @@
             android:text="@string/calculate_button"/>
 
     </LinearLayout>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="60dp"
+        />
 
 </FrameLayout>

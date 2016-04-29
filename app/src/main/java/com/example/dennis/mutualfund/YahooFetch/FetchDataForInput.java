@@ -26,6 +26,7 @@ public class FetchDataForInput extends AsyncTask<String,Void,ArrayAdapter<String
     @Override
     protected ArrayAdapter<String> doInBackground(String... params) {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext,android.R.layout.simple_dropdown_item_1line, new FetchData(mInput).fetchItems());
+        Log.i("Test","Received adapter" + adapter);
         return adapter;
     }
     @Override
