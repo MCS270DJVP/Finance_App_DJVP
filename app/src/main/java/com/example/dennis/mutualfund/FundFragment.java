@@ -3,15 +3,16 @@ package com.example.dennis.mutualfund;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -27,11 +28,9 @@ import com.example.dennis.mutualfund.YahooFetch.FetchDataForAdd;
 import com.example.dennis.mutualfund.YahooFetch.FetchDataForCalculate;
 import com.example.dennis.mutualfund.YahooFetch.FetchDataForGraph;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 public class FundFragment extends Fragment{
-    private Fund mFund;
     private RecyclerView mFundRecyclerView;
     private EditText mTickerField;
     private TextView mPriceField;
@@ -40,10 +39,8 @@ public class FundFragment extends Fragment{
     private Button mCalculate;
     private static final String TAG = "MUTUAL_FUND";
     private FundAdapter mFundAdapter;
-    private BigDecimal mStockPrice;
     private String mTickerTitle;
     private List<Fund> mFunds;
-   //  private Spinner mSpinner;
     private static final String KEY_SPINNERS = "spinners";
     private int[] savedWeights;
 
@@ -64,16 +61,11 @@ public class FundFragment extends Fragment{
             @Override
             public void onClick(View v) {
                 if (isConnectedtoInternet()) {
-                    mTickerTitle = mTickerField.getText().toString().trim();
+                    mTickerTitle = mTickerField.getText().toString().trim().toUpperCase();
                     /* Checks for duplicate Ticker. Pops up dialog if Ticker already exists */
                     if (isRepeatString(mTickerTitle)) {
-                        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
-                        alert.setTitle("Repeat Fund");
-                        alert.setMessage("That fund is already in your list");
-                        alert.setPositiveButton("OK",null);
-                        alert.show();
-                        mTickerField.setText("");
-                        updateUI();
+                        dialogMessage("Ticker already exists");
+
                     } else if (!isEmpty(mTickerField) && isValidString(mTickerTitle)) {
                         new FetchDataForAdd(getActivity(), mTickerTitle,
                                 new Runnable() {
@@ -86,13 +78,19 @@ public class FundFragment extends Fragment{
                         mTickerField.setText("");
 
                     } else if (!isValidString(mTickerTitle)){
+                        dialogMessage ("Invalid Ticker");
                         mTickerField.setText("");
                         updateUI();
                     }
                 }
+                else {
+                    dialogMessage("No Internet access");
+                    mTickerField.setText("");
+                }
             }
 
         });
+
         mCalculate = (Button) v.findViewById(R.id.calculate_button);
         mCalculate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,7 +99,8 @@ public class FundFragment extends Fragment{
                     @Override
                     public void run() {
                         /*including the codes for the comparing recylcerView*/
-
+                        Intent intent = FundCalculatorActivity.newIntent(getActivity());
+                        startActivity(intent);
                     }
                 }).execute();
             }
@@ -136,9 +135,7 @@ public class FundFragment extends Fragment{
             super(itemView);
             itemView.setOnClickListener(this);
             mTickerTextView = (TextView) itemView.findViewById(R.id.list_item_ticker_textview);
-            mPriceField = (TextView) itemView.findViewById(R.id.price_display);
             mRemoveButton = (ImageButton) itemView.findViewById(R.id.remove);
-            //mSpinner = (Spinner) itemView.findViewById(R.id.list_item_weight_spinner);
             mRemoveButton.setOnClickListener(new View.OnClickListener(){
                 public void onClick(View v){
                     if (mFund != null) {
@@ -167,8 +164,6 @@ public class FundFragment extends Fragment{
             mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 public void onItemSelected(AdapterView<?> parent, View v, int pos, long id) {
                     Object item = parent.getItemAtPosition(pos);
-                    //String spin_value = item.toString();
-                    //Toast.makeText(parent.getContext(), "Selected: " + spin_value, Toast.LENGTH_LONG).show();
                     mFund.setWeight(pos);
                     FundLab.get(getActivity()).updateFund(mFund);
                 }
@@ -238,12 +233,14 @@ public class FundFragment extends Fragment{
         }
         mFundRecyclerView.setAdapter(mFundAdapter);
     }
+
     /*check if there is internet connection*/
     private boolean isConnectedtoInternet() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo !=null &&  activeNetworkInfo.isConnected();
     }
+
     /*check if the string contains no white space*/
     private boolean isValidString(String str) {
         for (int i = 0; i < str.length();i++) {
@@ -252,6 +249,14 @@ public class FundFragment extends Fragment{
             }
         }
         return true;
+    }
+
+    /*check if the input ticker is empty*/
+    private boolean isEmpty (EditText text) {
+        if (text.getText().toString().length() > 0) {
+            return false;
+        }
+        else return true;
     }
 
     /* Checks if a fund with the given Ticker exists in mFund */
@@ -264,14 +269,11 @@ public class FundFragment extends Fragment{
         return false;
     }
 
-    /*check if the input ticker is empty*/
-    private boolean isEmpty (EditText text) {
-        if (text.getText().toString().length() > 0) {
-            return false;
-        }
-        else return true;
+    private void dialogMessage(String str) {
+        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+        alert.setTitle(str);
+        alert.setPositiveButton("OK",null);
+        alert.show();
+        updateUI();
     }
-    /*if the ticker is invalid, pop up a dialog noticing about invalid ticker*/
-
-
 }
