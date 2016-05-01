@@ -1,6 +1,7 @@
 package com.example.dennis.mutualfund;
 
 import android.app.AlertDialog;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,8 +11,13 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -89,6 +95,7 @@ public class FundFragment extends Fragment{
             }
 
         });
+
         mCalculate = (Button) v.findViewById(R.id.calculate_button);
         mCalculate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,7 +116,20 @@ public class FundFragment extends Fragment{
             savedWeights = savedInstanceState.getIntArray(KEY_SPINNERS);
         }
 
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                mFundAdapter.remove(viewHolder.getAdapterPosition());
+            }
+        }).attachToRecyclerView(mFundRecyclerView);
+
         updateUI();
+
         return v;
     }
 
@@ -133,8 +153,7 @@ public class FundFragment extends Fragment{
             super(itemView);
             itemView.setOnClickListener(this);
             mTickerTextView = (TextView) itemView.findViewById(R.id.list_item_ticker_textview);
-            mPriceField = (TextView) itemView.findViewById(R.id.price_display);
-            mRemoveButton = (ImageButton) itemView.findViewById(R.id.remove);
+/*            mRemoveButton = (ImageButton) itemView.findViewById(R.id.remove);
             mRemoveButton.setOnClickListener(new View.OnClickListener(){
                 public void onClick(View v){
                     if (mFund != null) {
@@ -156,7 +175,7 @@ public class FundFragment extends Fragment{
                         builder.show();
                     }
                 }
-            });
+            });*/
 
             //updated spinner
             mSpinner = (Spinner) itemView.findViewById(R.id.list_item_weight_spinner);
@@ -211,6 +230,13 @@ public class FundFragment extends Fragment{
         }
         /*if mFundAdapter is null then create a new mFundAdapter*/
         public void setFunds(List<Fund>funds) {mFunds = funds;}
+
+
+        public void remove(int adapterPosition) {
+            FundLab.get(getActivity()).deleteFund(mFunds.get(adapterPosition));
+            mFunds.remove(adapterPosition);
+            notifyItemRemoved(adapterPosition);
+        }
     }
 
     /*update user interface*/
