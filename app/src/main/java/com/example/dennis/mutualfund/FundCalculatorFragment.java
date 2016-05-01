@@ -18,7 +18,7 @@ public class FundCalculatorFragment extends Fragment {
 
     List<TickerComparisonObject> objects = new ArrayList<TickerComparisonObject>();
     private RecyclerView mResultRecyclerView;
-    int totalOpenMarketDays;
+    double totalOpenMarketDays;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -64,7 +64,7 @@ public class FundCalculatorFragment extends Fragment {
                 objects.add(new TickerComparisonObject(overweights.get(i).getTicker(), underweights.get(j).getTicker(), attractiveValue));
 
                 if(i == overweights.size()-1){
-                    totalOpenMarketDays = tempOverweightValues.size();
+                    totalOpenMarketDays = tempOverweightValues.size() * 1.0;
                 }
             }
         }
@@ -118,7 +118,8 @@ public class FundCalculatorFragment extends Fragment {
             mTCO = tco;
             mTextView0.setText(mTCO.getOverweightTicker().toUpperCase());
             mTextView1.setText(mTCO.getUnderweightTicker().toUpperCase());
-            mTextView2.setText(Integer.toString(mTCO.getlikabilityValue()) + "/" + totalOpenMarketDays);
+            double likabilityPercent = Math.round((mTCO.getlikabilityValue()*10000)/totalOpenMarketDays)/100.0;
+            mTextView2.setText(Double.toString(likabilityPercent)+"%");
         }
 
         @Override
