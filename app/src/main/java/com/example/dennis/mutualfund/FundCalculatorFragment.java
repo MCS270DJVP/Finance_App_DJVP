@@ -18,6 +18,7 @@ public class FundCalculatorFragment extends Fragment {
 
     List<TickerComparisonObject> objects = new ArrayList<TickerComparisonObject>();
     private RecyclerView mResultRecyclerView;
+    int totalOpenMarketDays;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,8 +62,13 @@ public class FundCalculatorFragment extends Fragment {
                 tempUnderweightValues = underweights.get(j).getHistoricalPrices();
                 int attractiveValue = attractiveness(tempOverweightValues, tempUnderweightValues);  // Returns an int value
                 objects.add(new TickerComparisonObject(overweights.get(i).getTicker(), underweights.get(j).getTicker(), attractiveValue));
+
+                if(i == overweights.size()-1){
+                    totalOpenMarketDays = tempOverweightValues.size();
+                }
             }
         }
+
         Collections.sort(objects, new likabilityComparator());  // Sort the objects
     }
 
@@ -112,7 +118,7 @@ public class FundCalculatorFragment extends Fragment {
             mTCO = tco;
             mTextView0.setText(mTCO.getOverweightTicker().toUpperCase());
             mTextView1.setText(mTCO.getUnderweightTicker().toUpperCase());
-            mTextView2.setText(Integer.toString(mTCO.getlikabilityValue()));
+            mTextView2.setText(Integer.toString(mTCO.getlikabilityValue()) + "/" + totalOpenMarketDays);
         }
 
         @Override
