@@ -33,7 +33,6 @@ public class FundLab {
 
     }
 
-    /* The function we call every time we update our UI */
     public List<Fund> getFunds() {
         List<Fund> funds = new ArrayList<>();
 
