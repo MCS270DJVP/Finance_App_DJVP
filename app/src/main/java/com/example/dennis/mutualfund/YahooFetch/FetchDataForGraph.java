@@ -3,6 +3,8 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
+
 import com.example.dennis.mutualfund.Fund;
 import com.example.dennis.mutualfund.FundLab;
 import com.example.dennis.mutualfund.GraphDialogFragment;
@@ -37,8 +39,8 @@ public class FetchDataForGraph extends AsyncTask<Fund,Void,DialogFragment>{
         *If that is the case, update new data*/
         boolean isSameDate = currentTime.get(Calendar.DAY_OF_YEAR) == pastTime.get(Calendar.DAY_OF_YEAR)
                 && currentTime.get(Calendar.YEAR) == pastTime.get(Calendar.YEAR)
-                && currentTime.get(Calendar.HOUR_OF_DAY) <=16;
-
+                && (currentTime.get(Calendar.HOUR_OF_DAY) >=16 && pastTime.get(Calendar.HOUR_OF_DAY ) >= 16
+                || (currentTime.get(Calendar.HOUR_OF_DAY) <16 && pastTime.get(Calendar.HOUR_OF_DAY ) < 16));
         if (mFund.getHistoricalPrices() !=null && isSameDate) {
             return GraphDialogFragment.newInstance(mFund);
         }
@@ -61,7 +63,6 @@ public class FetchDataForGraph extends AsyncTask<Fund,Void,DialogFragment>{
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
         return GraphDialogFragment.newInstance(mFund);
     }

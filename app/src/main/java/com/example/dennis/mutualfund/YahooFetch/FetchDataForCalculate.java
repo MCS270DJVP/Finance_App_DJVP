@@ -53,8 +53,9 @@ public class FetchDataForCalculate extends AsyncTask<List<Fund>, Void,List<Fund>
             *If that is the case, update new data*/
             boolean isSameDate = currentTime.get(Calendar.DAY_OF_YEAR) == pastTime.get(Calendar.DAY_OF_YEAR)
                     && currentTime.get(Calendar.YEAR) == pastTime.get(Calendar.YEAR)
-                    && currentTime.get(Calendar.HOUR_OF_DAY) <=16;
-            if (mFund.getHistoricalPrices() == null && !isSameDate) {
+                    && (currentTime.get(Calendar.HOUR_OF_DAY) >=16 && pastTime.get(Calendar.HOUR_OF_DAY ) >= 16
+                    || (currentTime.get(Calendar.HOUR_OF_DAY) <16 && pastTime.get(Calendar.HOUR_OF_DAY ) < 16));
+            if (mFund.getHistoricalPrices() == null || !isSameDate) {
                 try {
                     mHistoricalPrices = new ArrayList<Double>();
                     Stock stocks = YahooFinance.get(mFund.getTicker(), from, to, Interval.DAILY);
@@ -70,10 +71,7 @@ public class FetchDataForCalculate extends AsyncTask<List<Fund>, Void,List<Fund>
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
             }
-
-
         }
         return mFunds;
     }

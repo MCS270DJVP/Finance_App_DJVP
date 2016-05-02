@@ -1,6 +1,4 @@
 package com.example.dennis.mutualfund;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,9 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
+import org.w3c.dom.Text;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,14 +18,11 @@ import java.util.List;
 
 public class FundCalculatorFragment extends Fragment {
     private List<Fund> mFunds;
-    private static final String ARG_FUNDS = "FUNDS";
 
-    private TextView mTextView0;
-    private TextView mTextView1;
-    private TextView mTextView2;
     List<TickerComparisonObject> objects = new ArrayList<TickerComparisonObject>();
-    private RecyclerView.Adapter mAdapter;
     private RecyclerView mResultRecyclerView;
+    double totalOpenMarketDays;
+    private TextView tx1, tx2, tx3;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,6 +49,9 @@ public class FundCalculatorFragment extends Fragment {
     public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         /*This is where you inflate the layout from */
         View v = inflater.inflate(R.layout.calculate_fragment, container, false);
+        tx1 = (TextView) v.findViewById(R.id.table_first_col);
+        tx2 = (TextView) v.findViewById(R.id.table_second_col);
+        tx3 = (TextView) v.findViewById(R.id.table_third_col);
         mResultRecyclerView = (RecyclerView) v.findViewById(R.id.recycler_view_results);
         mResultRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mResultRecyclerView.setAdapter(new ComparisonAdapter(objects));
@@ -72,8 +69,13 @@ public class FundCalculatorFragment extends Fragment {
                 tempUnderweightValues = underweights.get(j).getHistoricalPrices();
                 int attractiveValue = attractiveness(tempOverweightValues, tempUnderweightValues);  // Returns an int value
                 objects.add(new TickerComparisonObject(overweights.get(i).getTicker(), underweights.get(j).getTicker(), attractiveValue));
+
+                if(i == overweights.size()-1){
+                    totalOpenMarketDays = tempOverweightValues.size() * 1.0;
+                }
             }
         }
+
         Collections.sort(objects, new likabilityComparator());  // Sort the objects
     }
 
@@ -82,7 +84,10 @@ public class FundCalculatorFragment extends Fragment {
 
         int ONE = 1;
         int THOUSAND = 1000;
-        int ratioListSize = overweight.size();
+        int ratioListSize;
+        if (overweight.size() >= underweight.size())
+            ratioListSize = underweight.size();
+        else ratioListSize = overweight.size();
         double[] ratioList = new double[ratioListSize];
 
         for (int i = 0; i < ratioListSize; i++) {
@@ -123,7 +128,8 @@ public class FundCalculatorFragment extends Fragment {
             mTCO = tco;
             mTextView0.setText(mTCO.getOverweightTicker().toUpperCase());
             mTextView1.setText(mTCO.getUnderweightTicker().toUpperCase());
-            mTextView2.setText(Integer.toString(mTCO.getlikabilityValue()));
+            double likabilityPercent = Math.round((mTCO.getlikabilityValue()*10000)/totalOpenMarketDays)/100.0;
+            mTextView2.setText(Double.toString(likabilityPercent)+"%");
         }
 
         @Override
