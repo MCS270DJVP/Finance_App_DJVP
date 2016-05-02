@@ -77,7 +77,11 @@ public class FetchDataForCalculate extends AsyncTask<List<Fund>, Void,List<Fund>
     }
     @Override
     protected void onPostExecute(List<Fund> funds) {
-        mContinuation.run();
+        //mContinuation.run();
+    }
+
+    public Runnable getContinuation(){
+        return mContinuation;
     }
 }
 

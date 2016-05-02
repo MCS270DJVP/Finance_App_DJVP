@@ -54,6 +54,7 @@ public class FundFragment extends Fragment{
    //  private Spinner mSpinner;
     private static final String KEY_SPINNERS = "spinners";
     private int[] savedWeights;
+    private FetchDataForCalculate calcData;
 
 
     @Override
@@ -102,6 +103,7 @@ public class FundFragment extends Fragment{
                                 }
                         ).execute();
                         mTickerField.setText("");
+                        updateCalcData();
 
                     } else if (!isValidString(mTickerTitle)){
                         dialogMessage ("Invalid Ticker");
@@ -116,19 +118,13 @@ public class FundFragment extends Fragment{
             }
 
         });
+        updateCalcData();
         mCalculate = (Button) v.findViewById(R.id.calculate_button);
         mCalculate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (isConnectedtoInternet()) {
-                    new FetchDataForCalculate(getActivity(), new Runnable() {
-                        @Override
-                        public void run() {
-                        /*including the codes for the comparing recylcerView*/
-                            Intent intent = FundCalculatorActivity.newIntent(getActivity());
-                            startActivity(intent);
-                        }
-                    }).execute();
+                    calcData.getContinuation().run();
                 }
                 else
                     dialogMessage("No Internet access!");
@@ -293,6 +289,17 @@ public class FundFragment extends Fragment{
         alert.show();
         updateUI();
     }
+     private void updateCalcData() {
+         calcData = new FetchDataForCalculate(getActivity(), new Runnable() {
+             @Override
+             public void run() {
+                        /*including the codes for the comparing recylcerView*/
+                 Intent intent = FundCalculatorActivity.newIntent(getActivity());
+                 startActivity(intent);
+             }
+         });
+         calcData.execute();
+     }
 
     /*if the ticker is invalid, pop up a dialog noticing about invalid ticker*/
 

@@ -90,7 +90,7 @@ public class FundCalculatorFragment extends Fragment {
         else ratioListSize = overweight.size();
         double[] ratioList = new double[ratioListSize];
 
-        for (int i = 0; i < ratioListSize; i++) {
+        for (int i = 0; i < ratioListSize-1; i++) {
             Double a = overweight.get(i);
             Double b = underweight.get(i);
             // Divide with 3 digits after decimal
