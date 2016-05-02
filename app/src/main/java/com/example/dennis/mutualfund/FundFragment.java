@@ -87,7 +87,7 @@ public class FundFragment extends Fragment{
             @Override
             public void onClick(View v) {
                 if (isConnectedtoInternet()) {
-                    mTickerTitle = mTickerField.getText().toString().trim();
+                    mTickerTitle = mTickerField.getText().toString().trim().toUpperCase();
                     /* Checks for duplicate Ticker. Pops up dialog if Ticker already exists */
                     if (isRepeatString(mTickerTitle)) {
                         dialogMessage("Ticker already exists");
