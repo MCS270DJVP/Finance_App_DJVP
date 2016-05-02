@@ -9,7 +9,6 @@ import com.example.dennis.mutualfund.Fund;
 import com.example.dennis.mutualfund.FundLab;
 import com.example.dennis.mutualfund.GraphDialogFragment;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -17,9 +16,7 @@ import yahoofinance.Stock;
 import yahoofinance.YahooFinance;
 import yahoofinance.histquotes.HistoricalQuote;
 import yahoofinance.histquotes.Interval;
-/**
- * Created by huyviet1995 on 4/22/16.
- */
+
 public class FetchDataForGraph extends AsyncTask<Fund,Void,DialogFragment>{
     private Fund mFund;
     private Context mContext;

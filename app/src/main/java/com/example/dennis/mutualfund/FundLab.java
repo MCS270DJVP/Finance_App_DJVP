@@ -1,27 +1,18 @@
 package com.example.dennis.mutualfund;
 
-        import android.content.ContentValues;
+import android.content.ContentValues;
         import android.content.Context;
         import android.database.Cursor;
         import android.database.sqlite.SQLiteDatabase;
-        import android.os.Environment;
 
         import com.example.dennis.mutualfund.database.FundBaseHelper;
         import com.example.dennis.mutualfund.database.FundCursorWrapper;
         import com.example.dennis.mutualfund.database.FundDBSchema.FundTable;
         import com.google.gson.Gson;
-        import com.google.gson.reflect.TypeToken;
-
-        import java.io.File;
-        import java.lang.reflect.Array;
-        import java.lang.reflect.Type;
         import java.util.ArrayList;
         import java.util.List;
         import java.util.UUID;
 
-/**
- * Created by macowner on 3/6/16.
- */
 public class FundLab {
     private static FundLab sFundLab;
 
