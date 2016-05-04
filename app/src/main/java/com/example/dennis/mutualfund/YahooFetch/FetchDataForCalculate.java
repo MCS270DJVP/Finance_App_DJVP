@@ -2,6 +2,7 @@ package com.example.dennis.mutualfund.YahooFetch;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.support.v4.app.DialogFragment;
 
 import com.example.dennis.mutualfund.Fund;
 import com.example.dennis.mutualfund.FundLab;
@@ -79,6 +80,7 @@ public class FetchDataForCalculate extends AsyncTask<List<Fund>, Void,List<Fund>
     protected void onPostExecute(List<Fund> funds) {
         mContinuation.run();
     }
+
 }
 
 

@@ -54,11 +54,15 @@ public class FundFragment extends Fragment{
    //  private Spinner mSpinner;
     private static final String KEY_SPINNERS = "spinners";
     private int[] savedWeights;
+    //private FetchDataForCalculate updateCalcData;
+    private boolean calcEnabled;
 
 
     @Override
     public void onCreate(Bundle savedInstancestate){
         super.onCreate(savedInstancestate);
+        calcEnabled = false;
+        updateCalcData();
     }
 
     @Override
@@ -86,6 +90,7 @@ public class FundFragment extends Fragment{
         mAddButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                calcEnabled = false;
                 if (isConnectedtoInternet()) {
                     mTickerTitle = mTickerField.getText().toString().trim().toUpperCase();
                     /* Checks for duplicate Ticker. Pops up dialog if Ticker already exists */
@@ -98,6 +103,7 @@ public class FundFragment extends Fragment{
                                     @Override
                                     public void run() {
                                         updateUI();
+                                        calcEnabled = true;
                                     }
                                 }
                         ).execute();
@@ -113,6 +119,7 @@ public class FundFragment extends Fragment{
                     dialogMessage("No Internet access");
                     mTickerField.setText("");
                 }
+                //updateCalcData();
             }
 
         });
@@ -120,18 +127,23 @@ public class FundFragment extends Fragment{
         mCalculate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isConnectedtoInternet()) {
-                    new FetchDataForCalculate(getActivity(), new Runnable() {
-                        @Override
-                        public void run() {
+                if (calcEnabled) {
+                    if (isConnectedtoInternet()) {
+                        updateCalcData();
+                        new Runnable() {
+                            @Override
+                            public void run() {
                         /*including the codes for the comparing recylcerView*/
-                            Intent intent = FundCalculatorActivity.newIntent(getActivity());
-                            startActivity(intent);
-                        }
-                    }).execute();
+                                Intent intent = FundCalculatorActivity.newIntent(getActivity());
+                                startActivity(intent);
+                            }
+                        }.run();
+                    } else
+                        dialogMessage("No Internet access!");
+                } else {
+                    Toast.makeText(getActivity(), "Please wait a moment", Toast.LENGTH_SHORT)
+                            .show();
                 }
-                else
-                    dialogMessage("No Internet access!");
             }
         });
 
@@ -152,7 +164,16 @@ public class FundFragment extends Fragment{
             }
         }).attachToRecyclerView(mFundRecyclerView);
         updateUI();
+        updateCalcData();
         return v;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+       // calcEnabled = false;
+        //updateCalcData.execute();
+        updateUI();
     }
 
     /* Stores Weight data to initialize spinners upon rotation */
@@ -294,7 +315,15 @@ public class FundFragment extends Fragment{
         updateUI();
     }
 
-    /*if the ticker is invalid, pop up a dialog noticing about invalid ticker*/
-
+    private void updateCalcData() {
+        calcEnabled = false;
+        new FetchDataForCalculate(getActivity(),new Runnable() {
+            @Override
+            public void run() {
+                        /*including the codes for the comparing recylcerView*/
+                calcEnabled = true;
+            }
+        }).execute();
+    }
 
 }
