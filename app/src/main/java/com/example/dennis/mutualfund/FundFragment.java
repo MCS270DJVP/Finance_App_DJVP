@@ -1,26 +1,38 @@
 package com.example.dennis.mutualfund;
 
 import android.app.AlertDialog;
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RectF;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.AutoScrollHelper;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MotionEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -32,37 +44,62 @@ import android.widget.Toast;
 import com.example.dennis.mutualfund.YahooFetch.FetchDataForAdd;
 import com.example.dennis.mutualfund.YahooFetch.FetchDataForCalculate;
 import com.example.dennis.mutualfund.YahooFetch.FetchDataForGraph;
+import com.example.dennis.mutualfund.YahooFetch.FetchDataForInput;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class FundFragment extends Fragment{
+    private Fund mFund;
     private RecyclerView mFundRecyclerView;
-    private EditText mTickerField;
+    private AutoCompleteTextView mTickerField;
     private TextView mPriceField;
     private Button mAddButton;
-    //private ImageButton mRemoveButton;
+    private ImageButton mRemoveButton;
     private Button mCalculate;
     private static final String TAG = "MUTUAL_FUND";
     private FundAdapter mFundAdapter;
+    private BigDecimal mStockPrice;
     private String mTickerTitle;
     private List<Fund> mFunds;
+   //  private Spinner mSpinner;
     private static final String KEY_SPINNERS = "spinners";
     private int[] savedWeights;
+    private Paint p = new Paint();
+    private AlertDialog.Builder alertDialog;
 
 
     @Override
     public void onCreate(Bundle savedInstancestate){
         super.onCreate(savedInstancestate);
+        setHasOptionsMenu(true);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_fund, container, false);
         mFundRecyclerView = (RecyclerView) v.findViewById(R.id.recycler_view);
         mFundRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mTickerField = (EditText) v.findViewById(R.id.ticker_text);
+        mTickerField = (AutoCompleteTextView) v.findViewById(R.id.ticker_text);
+        mTickerField.setThreshold(1);
+
+        mTickerField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                new FetchDataForInput(getActivity(), mTickerField.getText().toString().trim(), mTickerField).execute();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
         mAddButton = (Button) v.findViewById(R.id.add_button);
-        mAddButton.setOnClickListener(new View.OnClickListener(){
+        mAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (isConnectedtoInternet()) {
@@ -70,7 +107,7 @@ public class FundFragment extends Fragment{
                     /* Checks for duplicate Ticker. Pops up dialog if Ticker already exists */
                     if (isRepeatString(mTickerTitle)) {
                         dialogMessage("Ticker already exists");
-
+                        mTickerField.setText("");
                     } else if (!isEmpty(mTickerField) && isValidString(mTickerTitle)) {
                         new FetchDataForAdd(getActivity(), mTickerTitle,
                                 new Runnable() {
@@ -82,32 +119,33 @@ public class FundFragment extends Fragment{
                         ).execute();
                         mTickerField.setText("");
 
-                    } else if (!isValidString(mTickerTitle)){
-                        dialogMessage ("Invalid Ticker");
+                    } else if (!isValidString(mTickerTitle)) {
+                        dialogMessage("Invalid Ticker");
                         mTickerField.setText("");
                         updateUI();
                     }
-                }
-                else {
+                } else {
                     dialogMessage("No Internet access");
                     mTickerField.setText("");
                 }
             }
 
         });
-
         mCalculate = (Button) v.findViewById(R.id.calculate_button);
         mCalculate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new FetchDataForCalculate(getActivity(), new Runnable() {
-                    @Override
-                    public void run() {
+                if (isConnectedtoInternet()) {
+                    new FetchDataForCalculate(getActivity(), new Runnable() {
+                        @Override
+                        public void run() {
                         /*including the codes for the comparing recylcerView*/
-                        Intent intent = FundCalculatorActivity.newIntent(getActivity());
-                        startActivity(intent);
-                    }
-                }).execute();
+                            Intent intent = FundCalculatorActivity.newIntent(getActivity());
+                            startActivity(intent);
+                        }
+                    }).execute();
+                } else
+                    dialogMessage("No Internet access!");
             }
         });
 
@@ -117,21 +155,49 @@ public class FundFragment extends Fragment{
         }
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-            @Override
+            private Paint warningPaint = new Paint();
+            {warningPaint.setColor(Color.RED);}
+
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
                 return false;
             }
 
-            @Override
+
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 mFundAdapter.remove(viewHolder.getAdapterPosition());
             }
+
+
+            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                Bitmap icon;
+                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+                    View itemView = viewHolder.itemView;
+                    float height = (float) itemView.getBottom() - (float) itemView.getTop();
+                    float width = height / 3;
+
+                    if (dX > 0) {
+                        p.setColor(Color.parseColor("#388E3C"));
+                        RectF background = new RectF((float) itemView.getLeft(), (float) itemView.getTop(), dX,(float) itemView.getBottom());
+                        c.drawRect(background,p);
+                        icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_edit_white);
+                        RectF icon_dest = new RectF((float) itemView.getLeft() + width ,(float) itemView.getTop() + width,(float) itemView.getLeft()+ 2*width,(float)itemView.getBottom() - width);
+                        c.drawBitmap(icon,null,icon_dest,p);
+                    } else {
+                        p.setColor(Color.parseColor("#D32F2F"));
+                        RectF background = new RectF((float) itemView.getRight() + dX, (float) itemView.getTop(),(float) itemView.getRight(), (float) itemView.getBottom());
+                        c.drawRect(background,p);
+                        icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_delete_white);
+                        RectF icon_dest = new RectF((float) itemView.getRight() - 2*width ,(float) itemView.getTop() + width,(float) itemView.getRight() - width,(float)itemView.getBottom() - width);
+                        c.drawBitmap(icon,null,icon_dest,p);
+                    }
+                }
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            }
         }).attachToRecyclerView(mFundRecyclerView);
-
         updateUI();
-
         return v;
     }
+
 
     /* Stores Weight data to initialize spinners upon rotation */
     @Override
@@ -145,6 +211,21 @@ public class FundFragment extends Fragment{
         savedInstanceState.putIntArray(KEY_SPINNERS, spinners);
     }
 
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.fragment_main_screen, menu);
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_item_undo:
+              //  addFund ___ Back ();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     private class FundHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private Fund mFund;
         private TextView mTickerTextView;
@@ -153,30 +234,6 @@ public class FundFragment extends Fragment{
             super(itemView);
             itemView.setOnClickListener(this);
             mTickerTextView = (TextView) itemView.findViewById(R.id.list_item_ticker_textview);
-/*            mRemoveButton = (ImageButton) itemView.findViewById(R.id.remove);
-            mRemoveButton.setOnClickListener(new View.OnClickListener(){
-                public void onClick(View v){
-                    if (mFund != null) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                        builder.setTitle("Deletion Alert");
-                        builder.setMessage("Do you really want to delete this?");
-                        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                Toast.makeText(getActivity(), "Fund Deleted!", Toast.LENGTH_SHORT).show();
-                                FundLab.get(getActivity()).deleteFund(mFund);
-                                updateUI();
-                            }
-                        });
-                        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        });
-                        builder.show();
-                    }
-                }
-            });*/
-
             //updated spinner
             mSpinner = (Spinner) itemView.findViewById(R.id.list_item_weight_spinner);
             mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -203,7 +260,9 @@ public class FundFragment extends Fragment{
         }
         @Override
         public void onClick(View v) {
-            new FetchDataForGraph(getActivity(),getFragmentManager(),mFund).execute();
+            if (!isConnectedtoInternet()) dialogMessage("No Internet Connection!");
+            else
+                new FetchDataForGraph(getActivity(),getFragmentManager(),mFund).execute();
         }
     }
 
@@ -231,14 +290,12 @@ public class FundFragment extends Fragment{
         /*if mFundAdapter is null then create a new mFundAdapter*/
         public void setFunds(List<Fund>funds) {mFunds = funds;}
 
-
         public void remove(int adapterPosition) {
             FundLab.get(getActivity()).deleteFund(mFunds.get(adapterPosition));
             mFunds.remove(adapterPosition);
             notifyItemRemoved(adapterPosition);
         }
     }
-
     /*update user interface*/
     public void updateUI() {
         mFunds = FundLab.get(getActivity()).getFunds();
@@ -256,16 +313,15 @@ public class FundFragment extends Fragment{
             mFundAdapter.setFunds(mFunds);
             mFundAdapter.notifyDataSetChanged();
         }
+
         mFundRecyclerView.setAdapter(mFundAdapter);
     }
-
     /*check if there is internet connection*/
     private boolean isConnectedtoInternet() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo !=null &&  activeNetworkInfo.isConnected();
     }
-
     /*check if the string contains no white space*/
     private boolean isValidString(String str) {
         for (int i = 0; i < str.length();i++) {
@@ -275,7 +331,6 @@ public class FundFragment extends Fragment{
         }
         return true;
     }
-
     /*check if the input ticker is empty*/
     private boolean isEmpty (EditText text) {
         if (text.getText().toString().length() > 0) {
@@ -283,7 +338,6 @@ public class FundFragment extends Fragment{
         }
         else return true;
     }
-
     /* Checks if a fund with the given Ticker exists in mFund */
     private boolean isRepeatString(String str) {
         for (int i = 0; i < mFunds.size();i++) {
@@ -293,7 +347,6 @@ public class FundFragment extends Fragment{
         }
         return false;
     }
-
     private void dialogMessage(String str) {
         AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
         alert.setTitle(str);
@@ -301,4 +354,14 @@ public class FundFragment extends Fragment{
         alert.show();
         updateUI();
     }
+
+/*    private void editTicker(String str){
+        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+        alert.setTitle(str);
+        alert.setPositiveButton("Save",null);
+        alert.show();
+        updateUI();
+    }*/
+
+    /*if the ticker is invalid, pop up a dialog noticing about invalid ticker*/
 }

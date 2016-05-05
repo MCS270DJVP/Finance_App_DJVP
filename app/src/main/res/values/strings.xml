@@ -1,6 +1,7 @@
+
 <resources>
-    <string name="app_name">MutualFund</string>
-    <string name="ticker_hint">Search</string>
+    <string name="app_name">Mutual Fund</string>
+    <string name="ticker_hint">Enter Ticker</string>
     <string name="calculate_button">Calculate</string>
     <string name="add_button">Add</string>
     <string name="positive_button">OK</string>
@@ -15,4 +16,5 @@
         <item>UnderWeight</item>
         <item>No Weight</item>
     </string-array>
+    <string name="menu_checkbox_undo">Undo</string>
 </resources>
