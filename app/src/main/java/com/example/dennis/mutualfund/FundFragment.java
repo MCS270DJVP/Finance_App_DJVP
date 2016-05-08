@@ -2,19 +2,13 @@ package com.example.dennis.mutualfund;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.widget.AutoScrollHelper;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,19 +22,17 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.dennis.mutualfund.YahooFetch.FetchDataForAdd;
 import com.example.dennis.mutualfund.YahooFetch.FetchDataForCalculate;
 import com.example.dennis.mutualfund.YahooFetch.FetchDataForGraph;
 import com.example.dennis.mutualfund.YahooFetch.FetchDataForInput;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 public class FundFragment extends Fragment{
-    private Fund mFund;
     private RecyclerView mFundRecyclerView;
+    private EditText mTickerField;
     private AutoCompleteTextView mTickerField;
     private TextView mPriceField;
     private Button mAddButton;
@@ -48,10 +40,8 @@ public class FundFragment extends Fragment{
     private Button mCalculate;
     private static final String TAG = "MUTUAL_FUND";
     private FundAdapter mFundAdapter;
-    private BigDecimal mStockPrice;
     private String mTickerTitle;
     private List<Fund> mFunds;
-   //  private Spinner mSpinner;
     private static final String KEY_SPINNERS = "spinners";
     private int[] savedWeights;
 
@@ -116,6 +106,7 @@ public class FundFragment extends Fragment{
             }
 
         });
+
         mCalculate = (Button) v.findViewById(R.id.calculate_button);
         mCalculate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -151,7 +142,9 @@ public class FundFragment extends Fragment{
                 mFundAdapter.remove(viewHolder.getAdapterPosition());
             }
         }).attachToRecyclerView(mFundRecyclerView);
+
         updateUI();
+
         return v;
     }
 
@@ -175,7 +168,7 @@ public class FundFragment extends Fragment{
             super(itemView);
             itemView.setOnClickListener(this);
             mTickerTextView = (TextView) itemView.findViewById(R.id.list_item_ticker_textview);
-            //updated spinner
+            // Update Spinner
             mSpinner = (Spinner) itemView.findViewById(R.id.list_item_weight_spinner);
             mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 public void onItemSelected(AdapterView<?> parent, View v, int pos, long id) {
@@ -183,7 +176,6 @@ public class FundFragment extends Fragment{
                     mFund.setWeight(pos);
                     FundLab.get(getActivity()).updateFund(mFund);
                 }
-
                 public void onNothingSelected(AdapterView<?> parent) {
                     return;
                 }
@@ -195,9 +187,6 @@ public class FundFragment extends Fragment{
             mFund = fund;
             mSpinner.setSelection(mFund.getWeight());
             mTickerTextView.setText(mFund.getTicker().toUpperCase());
-            if (mFund.getStockValue()!=null ) {
-                mPriceField.setText(mFund.getStockValue().toString());
-            }
         }
         @Override
         public void onClick(View v) {
@@ -230,12 +219,15 @@ public class FundFragment extends Fragment{
         }
         /*if mFundAdapter is null then create a new mFundAdapter*/
         public void setFunds(List<Fund>funds) {mFunds = funds;}
+
+
         public void remove(int adapterPosition) {
             FundLab.get(getActivity()).deleteFund(mFunds.get(adapterPosition));
             mFunds.remove(adapterPosition);
             notifyItemRemoved(adapterPosition);
         }
     }
+
     /*update user interface*/
     public void updateUI() {
         mFunds = FundLab.get(getActivity()).getFunds();
@@ -255,12 +247,14 @@ public class FundFragment extends Fragment{
         }
         mFundRecyclerView.setAdapter(mFundAdapter);
     }
+
     /*check if there is internet connection*/
     private boolean isConnectedtoInternet() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo !=null &&  activeNetworkInfo.isConnected();
     }
+
     /*check if the string contains no white space*/
     private boolean isValidString(String str) {
         for (int i = 0; i < str.length();i++) {
@@ -270,6 +264,7 @@ public class FundFragment extends Fragment{
         }
         return true;
     }
+
     /*check if the input ticker is empty*/
     private boolean isEmpty (EditText text) {
         if (text.getText().toString().length() > 0) {
@@ -277,6 +272,7 @@ public class FundFragment extends Fragment{
         }
         else return true;
     }
+
     /* Checks if a fund with the given Ticker exists in mFund */
     private boolean isRepeatString(String str) {
         for (int i = 0; i < mFunds.size();i++) {
@@ -286,6 +282,7 @@ public class FundFragment extends Fragment{
         }
         return false;
     }
+
     private void dialogMessage(String str) {
         AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
         alert.setTitle(str);
@@ -293,8 +290,4 @@ public class FundFragment extends Fragment{
         alert.show();
         updateUI();
     }
-
-    /*if the ticker is invalid, pop up a dialog noticing about invalid ticker*/
-
-
 }
