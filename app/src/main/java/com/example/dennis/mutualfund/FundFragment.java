@@ -13,9 +13,11 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -74,6 +76,44 @@ public class FundFragment extends Fragment{
 
             }
         });
+
+        mTickerField.setOnEditorActionListener(new TextView.OnEditorActionListener(){
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event){
+                if(actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    if (isConnectedtoInternet()) {
+                        mTickerTitle = mTickerField.getText().toString().trim().toUpperCase();
+                    /* Checks for duplicate Ticker. Pops up dialog if Ticker already exists */
+                        if (isRepeatString(mTickerTitle)) {
+                            dialogMessage("Ticker already exists");
+                            mTickerField.setText("");
+                        } else if (!isEmpty(mTickerField) && isValidString(mTickerTitle)) {
+                            new FetchDataForAdd(getActivity(), mTickerTitle,
+                                    new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            updateUI();
+                                        }
+                                    }
+                            ).execute();
+                            mTickerField.setText("");
+
+                        } else if (!isValidString(mTickerTitle)){
+                            dialogMessage ("Invalid Ticker");
+                            mTickerField.setText("");
+                            updateUI();
+                        }
+                    }
+                    else {
+                        dialogMessage("No Internet access");
+                        mTickerField.setText("");
+                    }
+                    return true;
+                }
+                return false;
+            }
+        });
+
         mAddButton = (Button) v.findViewById(R.id.add_button);
         mAddButton.setOnClickListener(new View.OnClickListener(){
             @Override
