@@ -13,7 +13,7 @@
             <TextView
                 android:id="@+id/table_first_col"
                 android:layout_weight="1"
-                android:background="#dcdcdc"
+                android:background="@color/colorAccent"
                 android:textColor="#000000"
                 android:padding="10dp"
                 android:text="OVERWEIGHT"
@@ -22,7 +22,7 @@
             <TextView
                 android:id="@+id/table_second_col"
                 android:layout_weight="1"
-                android:background="#d3d3d3"
+                android:background="@color/colorPrimary"
                 android:textColor="#000000"
                 android:padding="10dp"
                 android:gravity="center"
@@ -32,7 +32,7 @@
             <TextView
                 android:id="@+id/table_third_col"
                 android:layout_weight="1"
-                android:background="#cac9c9"
+                android:background="@color/colorPrimaryDark"
                 android:textColor="#000000"
                 android:padding="10dp"
                 android:text="PERCENTAGE"
@@ -56,7 +56,7 @@
             android:layout_height="wrap_content"
             android:foreground="?android:attr/selectableItemBackground"
             android:clickable="true"
-            card_view:cardBackgroundColor="#ffd9d9d9"
+            card_view:cardBackgroundColor="@color/colorPrimary"
             card_view:cardCornerRadius="2dp"
             card_view:cardElevation="15dp">
 
@@ -79,7 +79,7 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view_results"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="80dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true"

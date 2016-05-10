@@ -10,10 +10,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -25,9 +24,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -47,6 +43,7 @@ import com.example.dennis.mutualfund.YahooFetch.FetchDataForGraph;
 import com.example.dennis.mutualfund.YahooFetch.FetchDataForInput;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 
 public class FundFragment extends Fragment{
@@ -62,17 +59,15 @@ public class FundFragment extends Fragment{
     private BigDecimal mStockPrice;
     private String mTickerTitle;
     private List<Fund> mFunds;
-   //  private Spinner mSpinner;
+    //  private Spinner mSpinner;
     private static final String KEY_SPINNERS = "spinners";
     private int[] savedWeights;
     private Paint p = new Paint();
-    private AlertDialog.Builder alertDialog;
 
 
     @Override
     public void onCreate(Bundle savedInstancestate){
         super.onCreate(savedInstancestate);
-        setHasOptionsMenu(true);
     }
 
     @Override
@@ -156,7 +151,10 @@ public class FundFragment extends Fragment{
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             private Paint warningPaint = new Paint();
-            {warningPaint.setColor(Color.RED);}
+
+            {
+                warningPaint.setColor(Color.RED);
+            }
 
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
                 return false;
@@ -170,25 +168,34 @@ public class FundFragment extends Fragment{
 
             public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
                 Bitmap icon;
+                Bitmap icon2;
                 if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
                     View itemView = viewHolder.itemView;
                     float height = (float) itemView.getBottom() - (float) itemView.getTop();
                     float width = height / 3;
 
                     if (dX > 0) {
-                        p.setColor(Color.parseColor("#388E3C"));
-                        RectF background = new RectF((float) itemView.getLeft(), (float) itemView.getTop(), dX,(float) itemView.getBottom());
-                        c.drawRect(background,p);
-                        icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_edit_white);
-                        RectF icon_dest = new RectF((float) itemView.getLeft() + width ,(float) itemView.getTop() + width,(float) itemView.getLeft()+ 2*width,(float)itemView.getBottom() - width);
-                        c.drawBitmap(icon,null,icon_dest,p);
+                        p.setColor(Color.parseColor("#D32F2F"));
+                        RectF background = new RectF((float) itemView.getLeft(), (float) itemView.getTop(), dX, (float) itemView.getBottom());
+                        c.drawRect(background, p);
+                        icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_delete_white);
+                        RectF icon_dest = new RectF((float) itemView.getLeft() + width, (float) itemView.getTop() + width, (float) itemView.getLeft() + 2 * width, (float) itemView.getBottom() - width);
+                        icon2 = BitmapFactory.decodeResource(getResources(), R.drawable.ic_undo_button);
+                        RectF icon_dest2 = new RectF((float) itemView.getRight() - 2 * width, (float) itemView.getTop() + width, (float) itemView.getRight() - width, (float) itemView.getBottom() - width);
+                        c.drawBitmap(icon, null, icon_dest, p);
+                        c.drawBitmap(icon2, null, icon_dest2, p);
+
                     } else {
                         p.setColor(Color.parseColor("#D32F2F"));
-                        RectF background = new RectF((float) itemView.getRight() + dX, (float) itemView.getTop(),(float) itemView.getRight(), (float) itemView.getBottom());
-                        c.drawRect(background,p);
+                        RectF background = new RectF((float) itemView.getRight() + dX, (float) itemView.getTop(), (float) itemView.getRight(), (float) itemView.getBottom());
+                        c.drawRect(background, p);
                         icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_delete_white);
-                        RectF icon_dest = new RectF((float) itemView.getRight() - 2*width ,(float) itemView.getTop() + width,(float) itemView.getRight() - width,(float)itemView.getBottom() - width);
-                        c.drawBitmap(icon,null,icon_dest,p);
+                        RectF icon_dest = new RectF((float) itemView.getRight() - 2 * width, (float) itemView.getTop() + width, (float) itemView.getRight() - width, (float) itemView.getBottom() - width);
+                        icon2 = BitmapFactory.decodeResource(getResources(), R.drawable.ic_undo_button);
+                        RectF icon_dest2 = new RectF((float) itemView.getLeft() + width, (float) itemView.getTop() + width, (float) itemView.getLeft() + 2 * width, (float) itemView.getBottom() - width);
+                        c.drawBitmap(icon, null, icon_dest, p);
+                        c.drawBitmap(icon2, null, icon_dest2, p);
+
                     }
                 }
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
@@ -197,7 +204,6 @@ public class FundFragment extends Fragment{
         updateUI();
         return v;
     }
-
 
     /* Stores Weight data to initialize spinners upon rotation */
     @Override
@@ -211,25 +217,12 @@ public class FundFragment extends Fragment{
         savedInstanceState.putIntArray(KEY_SPINNERS, spinners);
     }
 
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.fragment_main_screen, menu);
-    }
-
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_item_undo:
-              //  addFund ___ Back ();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
     private class FundHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private Fund mFund;
         private TextView mTickerTextView;
         private Spinner mSpinner;
+        private Button mUndoButton;
+        private Button mRemoveButton;
         public FundHolder(View itemView){
             super(itemView);
             itemView.setOnClickListener(this);
@@ -247,6 +240,8 @@ public class FundFragment extends Fragment{
                     return;
                 }
             });
+            mUndoButton = (Button) itemView.findViewById(R.id.undo_button);
+            mRemoveButton = (Button) itemView.findViewById(R.id.remove_button);
 
         }
 
@@ -267,11 +262,15 @@ public class FundFragment extends Fragment{
     }
 
     private class FundAdapter extends RecyclerView.Adapter<FundHolder> {
-        private List<Fund> mFunds;
+        private static final int PENDING_REMOVAL_TIMEOUT = 50000; //50seconds
+        private List<Fund> mFundsPendingRemoval;
+        private Handler handler = new Handler();
+        HashMap<String, Runnable> pendingRunnables = new HashMap<>();
+
         public FundAdapter(List<Fund> funds) {
             mFunds = funds;
-
         }
+
         @Override
         public FundHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
@@ -280,21 +279,83 @@ public class FundFragment extends Fragment{
         }
         @Override
         public void onBindViewHolder(FundHolder holder, int position){
-            Fund fund = mFunds.get(position);
+            final Fund fund = mFunds.get(position);
+            FundHolder viewHolder = (FundHolder)holder;
             holder.bindFund(fund);
+            if (mFundsPendingRemoval.contains(fund)) {
+                // we need to show the "undo" state of the row
+                viewHolder.itemView.setBackgroundColor(Color.parseColor("#D32F2F"));
+                viewHolder.mRemoveButton.setVisibility(View.VISIBLE);
+                viewHolder.mUndoButton.setVisibility(View.VISIBLE);
+                viewHolder.mRemoveButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v){
+                        Runnable pendingRemovalRunnable = pendingRunnables.get(fund);
+                        pendingRunnables.remove(fund);
+                        if (pendingRemovalRunnable != null) handler.removeCallbacks(pendingRemovalRunnable);
+                        mFundsPendingRemoval.remove(fund);
+                        FundLab.get(getActivity()).deleteFund(mFund);
+                        updateUI();
+                    }
+                });
+                viewHolder.mUndoButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v){
+                        // user wants to undo the removal, let's cancel the pending task
+                        Runnable pendingRemovalRunnable = pendingRunnables.get(fund);
+                        pendingRunnables.remove(fund);
+                        if (pendingRemovalRunnable != null) handler.removeCallbacks(pendingRemovalRunnable);
+                        mFundsPendingRemoval.remove(fund);
+                        // this will rebind the row in "normal" state
+                        notifyItemChanged(mFunds.indexOf(fund));
+                    }
+                });
+            }   else {
+                // we need to show the "normal" state
+                viewHolder.itemView.setBackgroundColor(Color.WHITE);
+                viewHolder.mRemoveButton.setVisibility(View.GONE);
+                viewHolder.mUndoButton.setVisibility(View.GONE);
+                viewHolder.mUndoButton.setOnClickListener(null);
+                viewHolder.mRemoveButton.setOnClickListener(null);
+            }
         }
         @Override
         public int getItemCount() {
             return mFunds.size();
         }
+
         /*if mFundAdapter is null then create a new mFundAdapter*/
         public void setFunds(List<Fund>funds) {mFunds = funds;}
+
+        public void pendingRemoval(int position) {
+            final Fund fund = mFunds.get(position);
+            if (!mFundsPendingRemoval.contains(fund)) {
+                mFundsPendingRemoval.add(fund);
+                // this will redraw row in "undo" state
+                notifyItemChanged(position);
+                // let's create, store and post a runnable to remove the item
+                Runnable pendingRemovalRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        remove(mFunds.indexOf(fund));
+                    }
+                };
+                handler.postDelayed(pendingRemovalRunnable, PENDING_REMOVAL_TIMEOUT);
+                //pendingRunnables.put(fund, pendingRemovalRunnable);
+            }
+        }
 
         public void remove(int adapterPosition) {
             FundLab.get(getActivity()).deleteFund(mFunds.get(adapterPosition));
             mFunds.remove(adapterPosition);
             notifyItemRemoved(adapterPosition);
         }
+
+        public boolean isPendingRemoval(int position) {
+            final Fund fund = mFunds.get(position);
+            return mFundsPendingRemoval.contains(fund);
+        }
+
     }
     /*update user interface*/
     public void updateUI() {
@@ -313,7 +374,6 @@ public class FundFragment extends Fragment{
             mFundAdapter.setFunds(mFunds);
             mFundAdapter.notifyDataSetChanged();
         }
-
         mFundRecyclerView.setAdapter(mFundAdapter);
     }
     /*check if there is internet connection*/
@@ -354,14 +414,6 @@ public class FundFragment extends Fragment{
         alert.show();
         updateUI();
     }
-
-/*    private void editTicker(String str){
-        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
-        alert.setTitle(str);
-        alert.setPositiveButton("Save",null);
-        alert.show();
-        updateUI();
-    }*/
-
     /*if the ticker is invalid, pop up a dialog noticing about invalid ticker*/
+
 }
