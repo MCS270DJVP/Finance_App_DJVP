@@ -65,6 +65,8 @@ public class FetchDataForGraph extends AsyncTask<Fund,Void,DialogFragment>{
     }
     @Override
     protected void onPostExecute(DialogFragment dialogFragment) {
-        dialogFragment.show(mManager,"NULL");
+        if (mManager != null) {
+            dialogFragment.show(mManager, "NULL");
+        }
     }
 }

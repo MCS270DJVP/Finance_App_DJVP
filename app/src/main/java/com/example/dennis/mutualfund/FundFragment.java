@@ -56,12 +56,14 @@ public class FundFragment extends Fragment{
     private int[] savedWeights;
     //private FetchDataForCalculate updateCalcData;
     private boolean calcEnabled;
+    private FundActivity parent;
 
 
     @Override
     public void onCreate(Bundle savedInstancestate){
         super.onCreate(savedInstancestate);
         calcEnabled = false;
+        parent = ((FundActivity)getActivity());
         updateCalcData();
     }
 
@@ -90,8 +92,8 @@ public class FundFragment extends Fragment{
         mAddButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                calcEnabled = false;
                 if (isConnectedtoInternet()) {
+                    calcEnabled = false;
                     mTickerTitle = mTickerField.getText().toString().trim().toUpperCase();
                     /* Checks for duplicate Ticker. Pops up dialog if Ticker already exists */
                     if (isRepeatString(mTickerTitle)) {
@@ -130,14 +132,8 @@ public class FundFragment extends Fragment{
                 if (calcEnabled) {
                     if (isConnectedtoInternet()) {
                         updateCalcData();
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                        /*including the codes for the comparing recylcerView*/
-                                Intent intent = FundCalculatorActivity.newIntent(getActivity());
-                                startActivity(intent);
-                            }
-                        }.run();
+                        Intent intent = FundCalculatorActivity.newIntent(getActivity());
+                        startActivity(intent);
                     } else
                         dialogMessage("No Internet access!");
                 } else {
@@ -317,13 +313,11 @@ public class FundFragment extends Fragment{
 
     private void updateCalcData() {
         calcEnabled = false;
-        new FetchDataForCalculate(getActivity(),new Runnable() {
-            @Override
-            public void run() {
-                        /*including the codes for the comparing recylcerView*/
-                calcEnabled = true;
-            }
-        }).execute();
+        parent.updateData();
+    }
+
+    public void enableCalc() {
+        calcEnabled = true;
     }
 
 }
