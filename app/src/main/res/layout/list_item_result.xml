@@ -17,7 +17,7 @@
             android:id="@+id/list_item_ticker_textview0"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:background="#dcdcdc"
+            android:background="#B2EBF2"
             android:textColor="#000000"
             android:padding="20dip"
             android:gravity="center"/>
@@ -26,7 +26,7 @@
             android:id="@+id/list_item_ticker_textview1"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:background="#d3d3d3"
+            android:background="#80DEEA"
             android:textColor="#000000"
             android:padding="20dip"
             android:gravity="center"/>
@@ -35,7 +35,7 @@
             android:id="@+id/list_item_ticker_textview2"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:background="#cac9c9"
+            android:background="#4DD0E1"
             android:textColor="#000000"
             android:padding="20dip"
             android:gravity="center"/>

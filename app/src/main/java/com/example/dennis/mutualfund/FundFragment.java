@@ -19,12 +19,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 
-import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -38,9 +36,6 @@ import java.util.List;
 public class FundFragment extends Fragment{
     private RecyclerView mFundRecyclerView;
     private AutoCompleteTextView mTickerField;
-    private TextView mPriceField;
-    private Button mAddButton;
-    private ImageButton mRemoveButton;
     private Button mCalculate;
     private static final String TAG = "MUTUAL_FUND";
     private FundAdapter mFundAdapter;
@@ -86,7 +81,6 @@ public class FundFragment extends Fragment{
                     /* Checks for duplicate Ticker. Pops up dialog if Ticker already exists */
                         if (isRepeatString(mTickerTitle)) {
                             dialogMessage("Ticker already exists");
-                            mTickerField.setText("");
                         } else if (!isEmpty(mTickerField) && isValidString(mTickerTitle)) {
                             new FetchDataForAdd(getActivity(), mTickerTitle,
                                     new Runnable() {
@@ -97,16 +91,11 @@ public class FundFragment extends Fragment{
                                     }
                             ).execute();
                             mTickerField.setText("");
-
                         } else if (!isValidString(mTickerTitle)){
                             dialogMessage ("Invalid Ticker");
-                            mTickerField.setText("");
-                            updateUI();
                         }
-                    }
-                    else {
+                    } else {
                         dialogMessage("No Internet access");
-                        mTickerField.setText("");
                     }
                     return true;
                 }
@@ -114,40 +103,6 @@ public class FundFragment extends Fragment{
             }
         });
 
-        mAddButton = (Button) v.findViewById(R.id.add_button);
-        mAddButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                if (isConnectedtoInternet()) {
-                    mTickerTitle = mTickerField.getText().toString().trim().toUpperCase();
-                    /* Checks for duplicate Ticker. Pops up dialog if Ticker already exists */
-                    if (isRepeatString(mTickerTitle)) {
-                        dialogMessage("Ticker already exists");
-                        mTickerField.setText("");
-                    } else if (!isEmpty(mTickerField) && isValidString(mTickerTitle)) {
-                        new FetchDataForAdd(getActivity(), mTickerTitle,
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        updateUI();
-                                    }
-                                }
-                        ).execute();
-                        mTickerField.setText("");
-
-                    } else if (!isValidString(mTickerTitle)){
-                        dialogMessage ("Invalid Ticker");
-                        mTickerField.setText("");
-                        updateUI();
-                    }
-                }
-                else {
-                    dialogMessage("No Internet access");
-                    mTickerField.setText("");
-                }
-            }
-
-        });
 
         mCalculate = (Button) v.findViewById(R.id.calculate_button);
         mCalculate.setOnClickListener(new View.OnClickListener() {
@@ -330,6 +285,7 @@ public class FundFragment extends Fragment{
         alert.setTitle(str);
         alert.setPositiveButton("OK",null);
         alert.show();
+        mTickerField.setText("");
         updateUI();
     }
 }

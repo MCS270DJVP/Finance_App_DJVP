@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+    android:layout_height="match_parent"
+    android:background="@color/Cyan50"
+    >
 
     <TableLayout
         android:id="@+id/table_top_layout"
@@ -13,8 +14,9 @@
         <TableRow>
             <TextView
                 android:id="@+id/table_first_col"
+                android:layout_width="0dp"
                 android:layout_weight="1"
-                android:background="#dcdcdc"
+                android:background="#B2EBF2"
                 android:textColor="#000000"
                 android:padding="10dp"
                 android:text="OVERWEIGHT"
@@ -22,8 +24,9 @@
 
             <TextView
                 android:id="@+id/table_second_col"
+                android:layout_width="0dp"
                 android:layout_weight="1"
-                android:background="#d3d3d3"
+                android:background="#80DEEA"
                 android:textColor="#000000"
                 android:padding="10dp"
                 android:gravity="center"
@@ -32,19 +35,26 @@
 
             <TextView
                 android:id="@+id/table_third_col"
+                android:layout_width="0dp"
                 android:layout_weight="1"
-                android:background="#cac9c9"
+                android:background="#4DD0E1"
                 android:textColor="#000000"
                 android:padding="10dp"
                 android:text="PERCENTAGE"
                 android:gravity="center"/>
     </TableRow>
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="#000000" />
     </TableLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top|center"
-        android:id="@+id/linearLayout">
+        android:id="@+id/linearLayout"
+        android:background="@color/Cyan500">
         <TextView
             android:id="@+id/titleOfTable"
             android:layout_width="match_parent"
@@ -57,14 +67,13 @@
             android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"/>
 
-
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view_results"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="33dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
