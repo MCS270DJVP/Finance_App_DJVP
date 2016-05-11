@@ -22,10 +22,14 @@ public class FetchDataForGraph extends AsyncTask<Fund,Void,DialogFragment>{
     private Context mContext;
     private List<Double> mHistoricalPrices;
     private FragmentManager mManager;
-    public FetchDataForGraph (Context context,FragmentManager manager, Fund fund) {
+    private Runnable mContinuation;
+    public FetchDataForGraph (Context context,FragmentManager manager, Fund fund, Runnable runnable) {
         mManager = manager;
         mFund = fund;
         mContext = context;
+        /* This function now takes a Runnable. This allows FetchDataForGraph to inform
+         * FundFragment when it is done calculating. - Jack P */
+        mContinuation = runnable;
     }
     @Override
     protected DialogFragment doInBackground(Fund... params) {
@@ -66,5 +70,7 @@ public class FetchDataForGraph extends AsyncTask<Fund,Void,DialogFragment>{
     @Override
     protected void onPostExecute(DialogFragment dialogFragment) {
         dialogFragment.show(mManager,"NULL");
+        /* Informs FundFragment that it is done calculating. - Jack P*/
+        mContinuation.run();
     }
 }

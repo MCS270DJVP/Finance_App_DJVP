@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v4.app.Fragment;
@@ -24,6 +26,9 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+
+import android.app.Activity;
+import android.app.admin.DevicePolicyManager;
 
 import android.widget.ImageButton;
 import android.widget.Spinner;
@@ -54,6 +59,9 @@ public class FundFragment extends Fragment{
    //  private Spinner mSpinner;
     private static final String KEY_SPINNERS = "spinners";
     private int[] savedWeights;
+    private boolean calcEnabled;
+    /* A pointer to FundActivity - Jack P */
+    private Activity parent;
 
 
     @Override
@@ -93,10 +101,14 @@ public class FundFragment extends Fragment{
                         dialogMessage("Ticker already exists");
                         mTickerField.setText("");
                     } else if (!isEmpty(mTickerField) && isValidString(mTickerTitle)) {
+                        disableCalculate();
+                        lockScreenOrientation();
                         new FetchDataForAdd(getActivity(), mTickerTitle,
                                 new Runnable() {
                                     @Override
                                     public void run() {
+                                        enableCalculate();
+                                        unlockScreenOrientation();
                                         updateUI();
                                     }
                                 }
@@ -116,22 +128,23 @@ public class FundFragment extends Fragment{
             }
 
         });
+        enableCalculate();
         mCalculate = (Button) v.findViewById(R.id.calculate_button);
         mCalculate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isConnectedtoInternet()) {
-                    new FetchDataForCalculate(getActivity(), new Runnable() {
-                        @Override
-                        public void run() {
-                        /*including the codes for the comparing recylcerView*/
-                            Intent intent = FundCalculatorActivity.newIntent(getActivity());
-                            startActivity(intent);
-                        }
-                    }).execute();
+                if (calcEnabled) {
+                    if (isConnectedtoInternet()) {
+                        /* Moved much of the code here to updateCalcData - Jack P*/
+                        updateCalcData();
+                        Intent intent = FundCalculatorActivity.newIntent(getActivity());
+                        startActivity(intent);
+                    } else
+                        dialogMessage("No Internet access!");
+                } else {
+                    Toast.makeText(getActivity(), "Please wait a moment", Toast.LENGTH_SHORT)
+                            .show();
                 }
-                else
-                    dialogMessage("No Internet access!");
             }
         });
 
@@ -153,6 +166,22 @@ public class FundFragment extends Fragment{
         }).attachToRecyclerView(mFundRecyclerView);
         updateUI();
         return v;
+    }
+
+    /* Checks the daa when activity is resumed  - Jack P*/
+    @Override
+    public void onResume() {
+            super.onResume();
+            updateCalcData();
+            updateUI();
+        }
+
+    /* Sets a pointer to the parent activity and checks the data on program creation */
+    @Override
+    public void onAttach (Context context) {
+        super.onAttach(context);
+        parent = (Activity) context;
+        updateCalcData();
     }
 
     /* Stores Weight data to initialize spinners upon rotation */
@@ -202,8 +231,16 @@ public class FundFragment extends Fragment{
         @Override
         public void onClick(View v) {
             if (!isConnectedtoInternet()) dialogMessage("No Internet Connection!");
-            else
-                new FetchDataForGraph(getActivity(),getFragmentManager(),mFund).execute();
+            else{
+                disableCalculate();
+                lockScreenOrientation();
+                new FetchDataForGraph(getActivity(), getFragmentManager(), mFund, new Runnable() {
+                    @Override
+                    public void run() {
+                        unlockScreenOrientation();
+                        enableCalculate();
+                    }
+                }).execute();}
         }
     }
 
@@ -294,7 +331,49 @@ public class FundFragment extends Fragment{
         updateUI();
     }
 
-    /*if the ticker is invalid, pop up a dialog noticing about invalid ticker*/
+    /* Initiates a background thread that updates the stored historical prices for every
+    * fund registered in the SQLite database. Locks screen rotation and disallows calculation
+    * until the update is complete. */
+    private void updateCalcData() {
+        disableCalculate();
+        lockScreenOrientation();
+        new FetchDataForCalculate(getActivity(),new Runnable() {
+            @Override
+            public void run() {
+                /*including the codes for the comparing recylcerView*/
+                enableCalculate();
+                unlockScreenOrientation();
+                            }
+        }).execute();
+    }
 
+    /* Prevents screen orientation changes during loading */
+    private void lockScreenOrientation() {
+        parent.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+    }
+
+    /* Permits screen orientation changes after loading completes */
+    private void unlockScreenOrientation() {
+        parent.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+
+    }
+
+    /* Disallows calculation, and sets the Calculate button to say "Loading..." - Jack P */
+    private void disableCalculate() {
+        calcEnabled = false;
+        if (mCalculate != null) {
+            mCalculate.setText("Loading...");
+        }
+    }
+
+    /* Enables calculation, and sets he Calculate button to say "Calculate" - Jack P */
+    private void enableCalculate() {
+        calcEnabled = true;
+        if (mCalculate != null) {
+            mCalculate.setText("Calculate");
+        }
+    }
+
+    /*if the ticker is invalid, pop up a dialog noticing about invalid ticker*/
 
 }
