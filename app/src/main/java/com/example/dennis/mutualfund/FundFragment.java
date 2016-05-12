@@ -163,23 +163,21 @@ public class FundFragment extends Fragment{
 
 
             public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction) {
-                mFundAdapter.remove(viewHolder.getAdapterPosition());
-            }
-                /*final View undo = viewHolder.itemView.findViewById(R.id.undo_layout);
-                final View delete = viewHolder.itemView.findViewById(R.id.undo_layout);
+                final View undo = viewHolder.itemView.findViewById(R.id.list_item_fund);
+                final View delete = viewHolder.itemView.findViewById(R.id.list_item_fund);
                 final int PENDING_REMOVAL_TIMEOUT = 10000; //10seconds
-                if (undo != null) {
+                if (undo != null && delete != null) {
                     // optional: tapping the message dismisses immediately
                     TextView text = (TextView) viewHolder.itemView.findViewById(R.id.undo_text);
                     text.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            callbacks.onDismiss(mFundRecyclerView, viewHolder, viewHolder.getAdapterPosition());
+                            onDismiss(mFundRecyclerView, viewHolder, viewHolder.getAdapterPosition());
                         }
                     });
 
-                    TextView button = (TextView) viewHolder.itemView.findViewById(R.id.undo_button);
-                    button.setOnClickListener(new View.OnClickListener() {
+                    TextView undoButton = (TextView) viewHolder.itemView.findViewById(R.id.undo_button);
+                    undoButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             mFundRecyclerView.getAdapter().notifyItemChanged(viewHolder.getAdapterPosition());
@@ -188,8 +186,8 @@ public class FundFragment extends Fragment{
                         }
                     });
 
-                    TextView button = (TextView) viewHolder.itemView.findViewById(R.id.delete_button);
-                    button.setOnClickListener(new View.OnClickListener() {
+                    TextView deleteButton = (TextView) viewHolder.itemView.findViewById(R.id.delete_button);
+                    deleteButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             mFundRecyclerView.getAdapter().notifyItemChanged(viewHolder.getAdapterPosition());
@@ -203,11 +201,19 @@ public class FundFragment extends Fragment{
                     undo.postDelayed(new Runnable() {
                         public void run() {
                             if (undo.isShown())
-                                callbacks.onDismiss(mFundRecyclerView, viewHolder, viewHolder.getAdapterPosition());
+                                onDismiss(mFundRecyclerView, viewHolder, viewHolder.getAdapterPosition());
                         }
                     }, PENDING_REMOVAL_TIMEOUT);
+
+                    /*delete.setVisibility(View.VISIBLE);
+                    delete.postDelayed(new Runnable() {
+                        public void run() {
+                            if (delete.isShown())
+                                onDismiss(mFundRecyclerView, viewHolder, viewHolder.getAdapterPosition());
+                        }
+                    }, PENDING_REMOVAL_TIMEOUT);*/
                 }
-            }*/
+            }
 
 
             public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
@@ -224,10 +230,7 @@ public class FundFragment extends Fragment{
                         c.drawRect(background, p);
                         icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_delete_white);
                         RectF icon_dest = new RectF((float) itemView.getLeft() + width, (float) itemView.getTop() + width, (float) itemView.getLeft() + 2 * width, (float) itemView.getBottom() - width);
-                        icon2 = BitmapFactory.decodeResource(getResources(), R.drawable.ic_undo_button);
-                        RectF icon_dest2 = new RectF((float) itemView.getRight() - 2 * width, (float) itemView.getTop() + width, (float) itemView.getRight() - width, (float) itemView.getBottom() - width);
                         c.drawBitmap(icon, null, icon_dest, p);
-                        c.drawBitmap(icon2, null, icon_dest2, p);
 
                     } else {
                         p.setColor(Color.parseColor("#D32F2F"));
@@ -235,10 +238,7 @@ public class FundFragment extends Fragment{
                         c.drawRect(background, p);
                         icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_delete_white);
                         RectF icon_dest = new RectF((float) itemView.getRight() - 2 * width, (float) itemView.getTop() + width, (float) itemView.getRight() - width, (float) itemView.getBottom() - width);
-                        icon2 = BitmapFactory.decodeResource(getResources(), R.drawable.ic_undo_button);
-                        RectF icon_dest2 = new RectF((float) itemView.getLeft() + width, (float) itemView.getTop() + width, (float) itemView.getLeft() + 2 * width, (float) itemView.getBottom() - width);
                         c.drawBitmap(icon, null, icon_dest, p);
-                        c.drawBitmap(icon2, null, icon_dest2, p);
 
                     }
                 }

@@ -4,6 +4,7 @@
     android:layout_height="wrap_content">
 
     <LinearLayout
+        android:id="@+id/list_item_fund"
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:orientation="horizontal">
@@ -38,5 +39,46 @@
         android:background="@color/colorPrimaryDark"
         android:layout_gravity="bottom"
         />
+
+    <LinearLayout
+        android:id="@+id/undo_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorDeleteBackround"
+        android:orientation="horizontal"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/undo_text"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:gravity="center|start"
+            android:text="Undo"
+            android:textColor="@android:color/white"/>
+
+        <TextView
+            android:id="@+id/undo_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center|end"
+            android:text="UNDO"
+            android:textColor="?attr/colorAccent"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/delete_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center|start"
+            android:text="DELETE"
+            android:textColor="?attr/colorAccent"
+            android:textStyle="bold"/>
+
+    </LinearLayout>
 
 </FrameLayout>
