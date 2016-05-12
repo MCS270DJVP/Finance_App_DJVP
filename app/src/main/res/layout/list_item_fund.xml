@@ -31,24 +31,6 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/undo_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/undo_button"
-        android:textAllCaps="true"
-        android:textColor="@android:color/black"
-        android:layout_gravity="end|center_vertical"
-        style="@style/Base.Widget.AppCompat.Button.Borderless"
-        />
-
-    <Button
-        android:id="@+id/remove_button"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:background="@drawable/ic_remove_button"
-        style="@style/Base.Widget.AppCompat.Button.Borderless"
-        />
 
     <View
         android:layout_width="match_parent"
