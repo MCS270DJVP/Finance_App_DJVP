@@ -33,6 +33,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -71,7 +72,7 @@ public class FundFragment extends Fragment{
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View v = inflater.inflate(R.layout.fragment_fund, container, false);
         mFundRecyclerView = (RecyclerView) v.findViewById(R.id.recycler_view);
         mFundRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -82,19 +83,17 @@ public class FundFragment extends Fragment{
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
-
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                new FetchDataForInput(getActivity(), mTickerField.getText().toString().trim(), mTickerField).execute();
+                new FetchDataForInput(getActivity(),mTickerField.getText().toString().trim(),mTickerField).execute();
             }
-
             @Override
             public void afterTextChanged(Editable s) {
 
             }
         });
         mAddButton = (Button) v.findViewById(R.id.add_button);
-        mAddButton.setOnClickListener(new View.OnClickListener() {
+        mAddButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 if (isConnectedtoInternet()) {
@@ -114,12 +113,13 @@ public class FundFragment extends Fragment{
                         ).execute();
                         mTickerField.setText("");
 
-                    } else if (!isValidString(mTickerTitle)) {
-                        dialogMessage("Invalid Ticker");
+                    } else if (!isValidString(mTickerTitle)){
+                        dialogMessage ("Invalid Ticker");
                         mTickerField.setText("");
                         updateUI();
                     }
-                } else {
+                }
+                else {
                     dialogMessage("No Internet access");
                     mTickerField.setText("");
                 }
@@ -139,7 +139,8 @@ public class FundFragment extends Fragment{
                             startActivity(intent);
                         }
                     }).execute();
-                } else
+                }
+                else
                     dialogMessage("No Internet access!");
             }
         });
@@ -161,8 +162,49 @@ public class FundFragment extends Fragment{
             }
 
 
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                mFundAdapter.remove(viewHolder.getAdapterPosition());
+            public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction) {
+                final View undo = viewHolder.itemView.findViewById(R.id.undo_layout);
+                final View delete = viewHolder.itemView.findViewById(R.id.undo_layout);
+                final int PENDING_REMOVAL_TIMEOUT = 10000; //10seconds
+                if (undo != null) {
+                    // optional: tapping the message dismisses immediately
+                    TextView text = (TextView) viewHolder.itemView.findViewById(R.id.undo_text);
+                    text.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            callbacks.onDismiss(mFundRecyclerView, viewHolder, viewHolder.getAdapterPosition());
+                        }
+                    });
+
+                    TextView button = (TextView) viewHolder.itemView.findViewById(R.id.undo_button);
+                    button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mFundRecyclerView.getAdapter().notifyItemChanged(viewHolder.getAdapterPosition());
+                            clearView(mFundRecyclerView, viewHolder);
+                            undo.setVisibility(View.GONE);
+                        }
+                    });
+
+                    TextView button = (TextView) viewHolder.itemView.findViewById(R.id.delete_button);
+                    button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mFundRecyclerView.getAdapter().notifyItemChanged(viewHolder.getAdapterPosition());
+                            clearView(mFundRecyclerView, viewHolder);
+                            mFundAdapter.remove(viewHolder.getAdapterPosition());
+                            delete.setVisibility(View.GONE);
+                        }
+                    });
+
+                    undo.setVisibility(View.VISIBLE);
+                    undo.postDelayed(new Runnable() {
+                        public void run() {
+                            if (undo.isShown())
+                                callbacks.onDismiss(mFundRecyclerView, viewHolder, viewHolder.getAdapterPosition());
+                        }
+                    }, PENDING_REMOVAL_TIMEOUT);
+                }
             }
 
 
@@ -217,12 +259,15 @@ public class FundFragment extends Fragment{
         savedInstanceState.putIntArray(KEY_SPINNERS, spinners);
     }
 
+    public void onDismiss(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, int position) {
+        mFundAdapter.remove(viewHolder.getAdapterPosition());
+    }
+
+
     private class FundHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private Fund mFund;
         private TextView mTickerTextView;
         private Spinner mSpinner;
-        private Button mUndoButton;
-        private Button mRemoveButton;
         public FundHolder(View itemView){
             super(itemView);
             itemView.setOnClickListener(this);
@@ -240,8 +285,6 @@ public class FundFragment extends Fragment{
                     return;
                 }
             });
-            mUndoButton = (Button) itemView.findViewById(R.id.undo_button);
-            mRemoveButton = (Button) itemView.findViewById(R.id.remove_button);
 
         }
 
@@ -262,15 +305,11 @@ public class FundFragment extends Fragment{
     }
 
     private class FundAdapter extends RecyclerView.Adapter<FundHolder> {
-        private static final int PENDING_REMOVAL_TIMEOUT = 50000; //50seconds
-        private List<Fund> mFundsPendingRemoval;
-        private Handler handler = new Handler();
-        HashMap<String, Runnable> pendingRunnables = new HashMap<>();
-
+        private List<Fund> mFunds;
         public FundAdapter(List<Fund> funds) {
             mFunds = funds;
-        }
 
+        }
         @Override
         public FundHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
@@ -279,83 +318,20 @@ public class FundFragment extends Fragment{
         }
         @Override
         public void onBindViewHolder(FundHolder holder, int position){
-            final Fund fund = mFunds.get(position);
-            FundHolder viewHolder = (FundHolder)holder;
+            Fund fund = mFunds.get(position);
             holder.bindFund(fund);
-            if (mFundsPendingRemoval.contains(fund)) {
-                // we need to show the "undo" state of the row
-                viewHolder.itemView.setBackgroundColor(Color.parseColor("#D32F2F"));
-                viewHolder.mRemoveButton.setVisibility(View.VISIBLE);
-                viewHolder.mUndoButton.setVisibility(View.VISIBLE);
-                viewHolder.mRemoveButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v){
-                        Runnable pendingRemovalRunnable = pendingRunnables.get(fund);
-                        pendingRunnables.remove(fund);
-                        if (pendingRemovalRunnable != null) handler.removeCallbacks(pendingRemovalRunnable);
-                        mFundsPendingRemoval.remove(fund);
-                        FundLab.get(getActivity()).deleteFund(mFund);
-                        updateUI();
-                    }
-                });
-                viewHolder.mUndoButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v){
-                        // user wants to undo the removal, let's cancel the pending task
-                        Runnable pendingRemovalRunnable = pendingRunnables.get(fund);
-                        pendingRunnables.remove(fund);
-                        if (pendingRemovalRunnable != null) handler.removeCallbacks(pendingRemovalRunnable);
-                        mFundsPendingRemoval.remove(fund);
-                        // this will rebind the row in "normal" state
-                        notifyItemChanged(mFunds.indexOf(fund));
-                    }
-                });
-            }   else {
-                // we need to show the "normal" state
-                viewHolder.itemView.setBackgroundColor(Color.WHITE);
-                viewHolder.mRemoveButton.setVisibility(View.GONE);
-                viewHolder.mUndoButton.setVisibility(View.GONE);
-                viewHolder.mUndoButton.setOnClickListener(null);
-                viewHolder.mRemoveButton.setOnClickListener(null);
-            }
         }
         @Override
         public int getItemCount() {
             return mFunds.size();
         }
-
         /*if mFundAdapter is null then create a new mFundAdapter*/
         public void setFunds(List<Fund>funds) {mFunds = funds;}
-
-        public void pendingRemoval(int position) {
-            final Fund fund = mFunds.get(position);
-            if (!mFundsPendingRemoval.contains(fund)) {
-                mFundsPendingRemoval.add(fund);
-                // this will redraw row in "undo" state
-                notifyItemChanged(position);
-                // let's create, store and post a runnable to remove the item
-                Runnable pendingRemovalRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        remove(mFunds.indexOf(fund));
-                    }
-                };
-                handler.postDelayed(pendingRemovalRunnable, PENDING_REMOVAL_TIMEOUT);
-                //pendingRunnables.put(fund, pendingRemovalRunnable);
-            }
-        }
-
         public void remove(int adapterPosition) {
             FundLab.get(getActivity()).deleteFund(mFunds.get(adapterPosition));
             mFunds.remove(adapterPosition);
             notifyItemRemoved(adapterPosition);
         }
-
-        public boolean isPendingRemoval(int position) {
-            final Fund fund = mFunds.get(position);
-            return mFundsPendingRemoval.contains(fund);
-        }
-
     }
     /*update user interface*/
     public void updateUI() {
@@ -415,5 +391,4 @@ public class FundFragment extends Fragment{
         updateUI();
     }
     /*if the ticker is invalid, pop up a dialog noticing about invalid ticker*/
-
 }
