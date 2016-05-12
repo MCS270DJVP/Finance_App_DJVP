@@ -163,7 +163,9 @@ public class FundFragment extends Fragment{
 
 
             public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction) {
-                final View undo = viewHolder.itemView.findViewById(R.id.undo_layout);
+                mFundAdapter.remove(viewHolder.getAdapterPosition());
+            }
+                /*final View undo = viewHolder.itemView.findViewById(R.id.undo_layout);
                 final View delete = viewHolder.itemView.findViewById(R.id.undo_layout);
                 final int PENDING_REMOVAL_TIMEOUT = 10000; //10seconds
                 if (undo != null) {
@@ -205,7 +207,7 @@ public class FundFragment extends Fragment{
                         }
                     }, PENDING_REMOVAL_TIMEOUT);
                 }
-            }
+            }*/
 
 
             public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
