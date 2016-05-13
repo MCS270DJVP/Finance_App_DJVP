@@ -41,9 +41,19 @@
             android:layout_weight="1"
             android:gravity="center_vertical|end"
             android:text="UNDO"
-            android:paddingRight="72dp"
+            android:paddingRight="65dp"
             android:background="@color/colorDeleteBackround"
             android:textColor="@color/colorWhite"
+            android:textStyle="bold"/>
+
+
+        <TextView
+            android:id="@+id/spinner_text"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Over"
+            android:paddingRight="20dp"
+            android:gravity="center_vertical|end"
             android:textStyle="bold"/>
 
         <Spinner

@@ -56,6 +56,7 @@ public class FundFragment extends Fragment{
     private Button mAddButton;
     private ImageButton mDeleteButton;
     private Button mCalculate;
+    private TextView mSpinnerText;
     private static final String TAG = "MUTUAL_FUND";
     private FundAdapter mFundAdapter;
     private BigDecimal mStockPrice;
@@ -210,6 +211,7 @@ public class FundFragment extends Fragment{
         private Fund mFund;
         private TextView mTickerTextView;
         private Spinner mSpinner;
+        private TextView mSpinnerText;
         private TextView mUndoButton;
         private ImageButton mDeleteButton;
         public FundHolder(View itemView){
@@ -219,14 +221,29 @@ public class FundFragment extends Fragment{
             mUndoButton.setVisibility(View.GONE);
             mDeleteButton = (ImageButton) itemView.findViewById(R.id.delete_button);
             mDeleteButton.setVisibility(View.GONE);
+            mSpinnerText = (TextView) itemView.findViewById(R.id.spinner_text);
+            mSpinnerText.setVisibility(View.GONE);
             mTickerTextView = (TextView) itemView.findViewById(R.id.list_item_ticker_textview);
             //updated spinner
             mSpinner = (Spinner) itemView.findViewById(R.id.list_item_weight_spinner);
             mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 public void onItemSelected(AdapterView<?> parent, View v, int pos, long id) {
-                    Object item = parent.getItemAtPosition(pos);
                     mFund.setWeight(pos);
+                    if (mFund.getWeight() == 0) {
+                        mSpinnerText.setText("Overweight");
+                        mSpinnerText.setTextColor(Color.parseColor("#4CAF50"));
+                        mSpinnerText.setVisibility(View.VISIBLE);
+                    } else if (mFund.getWeight() == 1) {
+                        mSpinnerText.setText("Underweight");
+                        mSpinnerText.setTextColor(Color.parseColor("#D32F2F"));
+                        mSpinnerText.setVisibility(View.VISIBLE);
+                    } else if (mFund.getWeight() == 2) {
+                        mSpinnerText.setText("No Weight");
+                        mSpinnerText.setTextColor(Color.GRAY);
+                        mSpinnerText.setVisibility(View.VISIBLE);
+                    }
                     FundLab.get(getActivity()).updateFund(mFund);
+
                 }
 
                 public void onNothingSelected(AdapterView<?> parent) {
@@ -268,7 +285,7 @@ public class FundFragment extends Fragment{
             return new FundHolder(view);
         }
         @Override
-        public void onBindViewHolder(FundHolder holder, int position){
+        public void onBindViewHolder(FundHolder holder, int position) {
             final Fund fund = mFunds.get(position);
             holder.bindFund(fund);
 
@@ -282,7 +299,8 @@ public class FundFragment extends Fragment{
                     public void onClick(View v) {
                         Runnable pendingRemovalRunnable = pendingRunnables.get(fund);
                         pendingRunnables.remove(fund);
-                        if (pendingRemovalRunnable != null) handler.removeCallbacks(pendingRemovalRunnable);
+                        if (pendingRemovalRunnable != null)
+                            handler.removeCallbacks(pendingRemovalRunnable);
                         fundsPendingRemoval.remove(fund);
                         notifyItemChanged(mFunds.indexOf(fund));
                     }
@@ -305,6 +323,8 @@ public class FundFragment extends Fragment{
         public int getItemCount() {
             return mFunds.size();
         }
+
+
         /*if mFundAdapter is null then create a new mFundAdapter*/
         public void setFunds(List<Fund>funds) {mFunds = funds;}
 
