@@ -44,6 +44,7 @@ import com.example.dennis.mutualfund.YahooFetch.FetchDataForGraph;
 import com.example.dennis.mutualfund.YahooFetch.FetchDataForInput;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -53,7 +54,7 @@ public class FundFragment extends Fragment{
     private AutoCompleteTextView mTickerField;
     private TextView mPriceField;
     private Button mAddButton;
-    private ImageButton mRemoveButton;
+    private ImageButton mDeleteButton;
     private Button mCalculate;
     private static final String TAG = "MUTUAL_FUND";
     private FundAdapter mFundAdapter;
@@ -154,7 +155,7 @@ public class FundFragment extends Fragment{
             private Paint warningPaint = new Paint();
 
             {
-                warningPaint.setColor(Color.RED);
+                warningPaint.setColor(Color.parseColor("#D32F2F"));
             }
 
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
@@ -163,84 +164,22 @@ public class FundFragment extends Fragment{
 
 
             public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction) {
-                final View undo = viewHolder.itemView.findViewById(R.id.list_item_fund);
-                final View delete = viewHolder.itemView.findViewById(R.id.list_item_fund);
-                final int PENDING_REMOVAL_TIMEOUT = 10000; //10seconds
-                if (undo != null && delete != null) {
-                    // optional: tapping the message dismisses immediately
-                    TextView text = (TextView) viewHolder.itemView.findViewById(R.id.undo_text);
-                    text.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            onDismiss(mFundRecyclerView, viewHolder, viewHolder.getAdapterPosition());
-                        }
-                    });
-
-                    TextView undoButton = (TextView) viewHolder.itemView.findViewById(R.id.undo_button);
-                    undoButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            mFundRecyclerView.getAdapter().notifyItemChanged(viewHolder.getAdapterPosition());
-                            clearView(mFundRecyclerView, viewHolder);
-                            undo.setVisibility(View.GONE);
-                        }
-                    });
-
-                    TextView deleteButton = (TextView) viewHolder.itemView.findViewById(R.id.delete_button);
-                    deleteButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            mFundRecyclerView.getAdapter().notifyItemChanged(viewHolder.getAdapterPosition());
-                            clearView(mFundRecyclerView, viewHolder);
-                            mFundAdapter.remove(viewHolder.getAdapterPosition());
-                            delete.setVisibility(View.GONE);
-                        }
-                    });
-
-                    undo.setVisibility(View.VISIBLE);
-                    undo.postDelayed(new Runnable() {
-                        public void run() {
-                            if (undo.isShown())
-                                onDismiss(mFundRecyclerView, viewHolder, viewHolder.getAdapterPosition());
-                        }
-                    }, PENDING_REMOVAL_TIMEOUT);
-
-                    /*delete.setVisibility(View.VISIBLE);
-                    delete.postDelayed(new Runnable() {
-                        public void run() {
-                            if (delete.isShown())
-                                onDismiss(mFundRecyclerView, viewHolder, viewHolder.getAdapterPosition());
-                        }
-                    }, PENDING_REMOVAL_TIMEOUT);*/
-                }
+                int position = viewHolder.getAdapterPosition();
+                mFundAdapter.pendingRemoval(position);
             }
 
-
             public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-                Bitmap icon;
-                Bitmap icon2;
                 if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
                     View itemView = viewHolder.itemView;
-                    float height = (float) itemView.getBottom() - (float) itemView.getTop();
-                    float width = height / 3;
-
+                    float left, right;
                     if (dX > 0) {
-                        p.setColor(Color.parseColor("#D32F2F"));
-                        RectF background = new RectF((float) itemView.getLeft(), (float) itemView.getTop(), dX, (float) itemView.getBottom());
-                        c.drawRect(background, p);
-                        icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_delete_white);
-                        RectF icon_dest = new RectF((float) itemView.getLeft() + width, (float) itemView.getTop() + width, (float) itemView.getLeft() + 2 * width, (float) itemView.getBottom() - width);
-                        c.drawBitmap(icon, null, icon_dest, p);
-
+                        left = itemView.getLeft();
+                        right = left + dX;
                     } else {
-                        p.setColor(Color.parseColor("#D32F2F"));
-                        RectF background = new RectF((float) itemView.getRight() + dX, (float) itemView.getTop(), (float) itemView.getRight(), (float) itemView.getBottom());
-                        c.drawRect(background, p);
-                        icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_delete_white);
-                        RectF icon_dest = new RectF((float) itemView.getRight() - 2 * width, (float) itemView.getTop() + width, (float) itemView.getRight() - width, (float) itemView.getBottom() - width);
-                        c.drawBitmap(icon, null, icon_dest, p);
-
+                        right = itemView.getRight();
+                        left = right + dX;
                     }
+                    c.drawRect(left, itemView.getTop(), right, itemView.getBottom(), warningPaint);
                 }
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
             }
@@ -248,6 +187,7 @@ public class FundFragment extends Fragment{
         updateUI();
         return v;
     }
+
 
     /* Stores Weight data to initialize spinners upon rotation */
     @Override
@@ -270,9 +210,15 @@ public class FundFragment extends Fragment{
         private Fund mFund;
         private TextView mTickerTextView;
         private Spinner mSpinner;
+        private TextView mUndoButton;
+        private ImageButton mDeleteButton;
         public FundHolder(View itemView){
             super(itemView);
             itemView.setOnClickListener(this);
+            mUndoButton = (TextView) itemView.findViewById(R.id.undo_button);
+            mUndoButton.setVisibility(View.GONE);
+            mDeleteButton = (ImageButton) itemView.findViewById(R.id.delete_button);
+            mDeleteButton.setVisibility(View.GONE);
             mTickerTextView = (TextView) itemView.findViewById(R.id.list_item_ticker_textview);
             //updated spinner
             mSpinner = (Spinner) itemView.findViewById(R.id.list_item_weight_spinner);
@@ -308,6 +254,9 @@ public class FundFragment extends Fragment{
 
     private class FundAdapter extends RecyclerView.Adapter<FundHolder> {
         private List<Fund> mFunds;
+        private List<Fund> fundsPendingRemoval = new ArrayList<>();
+        private Handler handler = new Handler();
+        HashMap<Fund, Runnable> pendingRunnables = new HashMap<>();
         public FundAdapter(List<Fund> funds) {
             mFunds = funds;
 
@@ -320,8 +269,37 @@ public class FundFragment extends Fragment{
         }
         @Override
         public void onBindViewHolder(FundHolder holder, int position){
-            Fund fund = mFunds.get(position);
+            final Fund fund = mFunds.get(position);
             holder.bindFund(fund);
+
+            if (fundsPendingRemoval.contains(fund)) {
+                holder.itemView.setBackgroundColor(Color.parseColor("#D32F2F"));
+                holder.mTickerTextView.setVisibility(View.GONE);
+                holder.mSpinner.setVisibility(View.GONE);
+                holder.mUndoButton.setVisibility(View.VISIBLE);
+                holder.mUndoButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Runnable pendingRemovalRunnable = pendingRunnables.get(fund);
+                        pendingRunnables.remove(fund);
+                        if (pendingRemovalRunnable != null) handler.removeCallbacks(pendingRemovalRunnable);
+                        fundsPendingRemoval.remove(fund);
+                        notifyItemChanged(mFunds.indexOf(fund));
+                    }
+                });
+                holder.mDeleteButton.setVisibility(View.VISIBLE);
+                holder.mDeleteButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        FundLab.get(getActivity()).deleteFund(fund);
+                        updateUI();
+                    }
+                });
+            } else {
+                holder.itemView.setBackgroundColor(Color.WHITE);
+                holder.mTickerTextView.setVisibility(View.VISIBLE);
+                holder.mSpinner.setVisibility(View.VISIBLE);
+            }
         }
         @Override
         public int getItemCount() {
@@ -329,10 +307,39 @@ public class FundFragment extends Fragment{
         }
         /*if mFundAdapter is null then create a new mFundAdapter*/
         public void setFunds(List<Fund>funds) {mFunds = funds;}
+
+        public void pendingRemoval(int position) {
+            final Fund fund = mFunds.get(position);
+            if (!fundsPendingRemoval.contains(fund)) {
+                fundsPendingRemoval.add(fund);
+                // this will redraw row in "undo" state
+                notifyItemChanged(position);
+                // let's create, store and post a runnable to remove the item
+                Runnable pendingRemovalRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+
+                        FundLab.get(getActivity()).deleteFund(fund);
+                        updateUI();
+
+                    }
+                };
+                handler.postDelayed(pendingRemovalRunnable, 5000);
+                pendingRunnables.put(fund, pendingRemovalRunnable);
+            }
+        }
+
+
         public void remove(int adapterPosition) {
-            FundLab.get(getActivity()).deleteFund(mFunds.get(adapterPosition));
-            mFunds.remove(adapterPosition);
-            notifyItemRemoved(adapterPosition);
+            final Fund fund = mFunds.get(adapterPosition);
+            if(fundsPendingRemoval.contains(fund)) {
+                fundsPendingRemoval.remove(fund);
+            }
+            if(mFunds.contains(fund)) {
+                FundLab.get(getActivity()).deleteFund(fund);
+                mFunds.remove(adapterPosition);
+                notifyItemRemoved(adapterPosition);
+            }
         }
     }
     /*update user interface*/

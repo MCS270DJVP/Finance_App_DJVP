@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:weightSum="3"
-        android:layout_marginTop="90dp">
+        android:layout_marginTop="62dp">
         <TableRow>
             <TextView
                 android:id="@+id/table_first_col"
@@ -58,7 +58,7 @@
             android:clickable="true"
             card_view:cardBackgroundColor="@color/colorPrimary"
             card_view:cardCornerRadius="2dp"
-            card_view:cardElevation="15dp">
+            card_view:cardElevation="8dp">
 
             <TextView
                 android:id="@+id/titleOfTable"
