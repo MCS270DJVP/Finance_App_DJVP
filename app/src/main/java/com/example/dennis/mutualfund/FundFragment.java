@@ -66,6 +66,7 @@ public class FundFragment extends Fragment{
     private Button mAddButton;
     private ImageButton mRemoveButton;
     private Button mCalculate;
+    private TextView mSpinnerText;
     private static final String TAG = "MUTUAL_FUND";
     private FundAdapter mFundAdapter;
     private BigDecimal mStockPrice;
