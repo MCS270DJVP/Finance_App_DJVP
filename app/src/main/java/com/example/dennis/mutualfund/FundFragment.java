@@ -57,6 +57,7 @@ public class FundFragment extends Fragment{
     private Button mAddButton;
     private ImageButton mDeleteButton;
     private Button mCalculate;
+    private Button mGraphView;
     private Button mUndoButton;
     private TextView mUndoDeleteBackround;
     private CardView mCardView;
@@ -218,13 +219,16 @@ public class FundFragment extends Fragment{
         private Spinner mSpinner;
         private TextView mSpinnerText;
         private Button mUndoButton;
+        private Button mGraphView;
         private CardView mCardView;
         private TextView mPriceField;
         private ImageButton mDeleteButton;
         public FundHolder(View itemView){
             super(itemView);
             itemView.setOnClickListener(this);
-            //mPriceField = (TextView) itemView.findViewById(R.id.price_display);
+            mGraphView = (Button) itemView.findViewById(R.id.graph_button);
+            //mGraphView.setOnClickListener();
+            mPriceField = (TextView) itemView.findViewById(R.id.price_display);
             mUndoButton = (Button) itemView.findViewById(R.id.undo_button);
             mUndoButton.setVisibility(View.GONE);
             mUndoDeleteBackround = (TextView) itemView.findViewById(R.id.undoDeleteBackround);
@@ -304,6 +308,8 @@ public class FundFragment extends Fragment{
                 holder.mCardView.setCardBackgroundColor(Color.parseColor("#D32F2F"));
                 holder.mTickerTextView.setVisibility(View.GONE);
                 holder.mSpinnerText.setVisibility(View.GONE);
+                holder.mGraphView.setVisibility(View.GONE);
+                holder.mPriceField.setVisibility(View.GONE);
                 holder.mSpinner.setVisibility(View.GONE);
                 holder.mUndoDeleteBackround.setVisibility(View.VISIBLE);
                 holder.mUndoButton.setVisibility(View.VISIBLE);
@@ -328,9 +334,11 @@ public class FundFragment extends Fragment{
                 });
             } else {
                 holder.itemView.setBackgroundColor(Color.WHITE);
+                holder.mPriceField.setVisibility(View.VISIBLE);
                 holder.mSpinnerText.setVisibility(View.VISIBLE);
                 holder.mTickerTextView.setVisibility(View.VISIBLE);
                 holder.mSpinner.setVisibility(View.VISIBLE);
+                holder.mGraphView.setVisibility(View.VISIBLE);
             }
         }
         @Override
