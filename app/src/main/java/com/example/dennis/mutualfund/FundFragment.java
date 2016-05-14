@@ -17,6 +17,7 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.AutoScrollHelper;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -56,6 +57,7 @@ public class FundFragment extends Fragment{
     private Button mAddButton;
     private ImageButton mDeleteButton;
     private Button mCalculate;
+    private CardView mCardView;
     private TextView mSpinnerText;
     private static final String TAG = "MUTUAL_FUND";
     private FundAdapter mFundAdapter;
@@ -213,6 +215,7 @@ public class FundFragment extends Fragment{
         private Spinner mSpinner;
         private TextView mSpinnerText;
         private TextView mUndoButton;
+        private CardView mCardView;
         private ImageButton mDeleteButton;
         public FundHolder(View itemView){
             super(itemView);
@@ -224,6 +227,7 @@ public class FundFragment extends Fragment{
             mSpinnerText = (TextView) itemView.findViewById(R.id.spinner_text);
             mSpinnerText.setVisibility(View.GONE);
             mTickerTextView = (TextView) itemView.findViewById(R.id.list_item_ticker_textview);
+            mCardView = (CardView) itemView.findViewById(R.id.cardView1);
             //updated spinner
             mSpinner = (Spinner) itemView.findViewById(R.id.list_item_weight_spinner);
             mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -290,7 +294,7 @@ public class FundFragment extends Fragment{
             holder.bindFund(fund);
 
             if (fundsPendingRemoval.contains(fund)) {
-                holder.itemView.setBackgroundColor(Color.parseColor("#D32F2F"));
+                holder.mCardView.setCardBackgroundColor(Color.parseColor("#D32F2F"));
                 holder.mTickerTextView.setVisibility(View.GONE);
                 holder.mSpinner.setVisibility(View.GONE);
                 holder.mUndoButton.setVisibility(View.VISIBLE);
