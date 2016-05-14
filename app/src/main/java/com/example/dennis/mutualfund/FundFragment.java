@@ -57,6 +57,8 @@ public class FundFragment extends Fragment{
     private Button mAddButton;
     private ImageButton mDeleteButton;
     private Button mCalculate;
+    private Button mUndoButton;
+    private TextView mUndoDeleteBackround;
     private CardView mCardView;
     private TextView mSpinnerText;
     private static final String TAG = "MUTUAL_FUND";
@@ -212,16 +214,21 @@ public class FundFragment extends Fragment{
     private class FundHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private Fund mFund;
         private TextView mTickerTextView;
+        private TextView mUndoDeleteBackround;
         private Spinner mSpinner;
         private TextView mSpinnerText;
-        private TextView mUndoButton;
+        private Button mUndoButton;
         private CardView mCardView;
+        private TextView mPriceField;
         private ImageButton mDeleteButton;
         public FundHolder(View itemView){
             super(itemView);
             itemView.setOnClickListener(this);
-            mUndoButton = (TextView) itemView.findViewById(R.id.undo_button);
+            //mPriceField = (TextView) itemView.findViewById(R.id.price_display);
+            mUndoButton = (Button) itemView.findViewById(R.id.undo_button);
             mUndoButton.setVisibility(View.GONE);
+            mUndoDeleteBackround = (TextView) itemView.findViewById(R.id.undoDeleteBackround);
+            mUndoDeleteBackround.setVisibility(View.GONE);
             mDeleteButton = (ImageButton) itemView.findViewById(R.id.delete_button);
             mDeleteButton.setVisibility(View.GONE);
             mSpinnerText = (TextView) itemView.findViewById(R.id.spinner_text);
@@ -296,7 +303,9 @@ public class FundFragment extends Fragment{
             if (fundsPendingRemoval.contains(fund)) {
                 holder.mCardView.setCardBackgroundColor(Color.parseColor("#D32F2F"));
                 holder.mTickerTextView.setVisibility(View.GONE);
+                holder.mSpinnerText.setVisibility(View.GONE);
                 holder.mSpinner.setVisibility(View.GONE);
+                holder.mUndoDeleteBackround.setVisibility(View.VISIBLE);
                 holder.mUndoButton.setVisibility(View.VISIBLE);
                 holder.mUndoButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -319,6 +328,7 @@ public class FundFragment extends Fragment{
                 });
             } else {
                 holder.itemView.setBackgroundColor(Color.WHITE);
+                holder.mSpinnerText.setVisibility(View.VISIBLE);
                 holder.mTickerTextView.setVisibility(View.VISIBLE);
                 holder.mSpinner.setVisibility(View.VISIBLE);
             }
