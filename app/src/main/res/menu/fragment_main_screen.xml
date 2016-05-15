@@ -7,5 +7,10 @@
           android:title="@string/remove_stock"
 
           app:showAsAction="ifRoom" />
+      <item
+          android:id="@+id/menu_item_new_fund"
+          android:icon="@android:drawable/ic_menu_add"
+          app:showAsAction="ifRoom|withText"
+          android:title="New Fund" />
 
 </menu>

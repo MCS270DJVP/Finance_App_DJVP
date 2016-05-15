@@ -17,7 +17,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Created by huyviet1995 on 4/28/16.
@@ -58,8 +61,8 @@ public class FetchData {
     public String getUrlString(String urlSpec) throws IOException {
         return new String(getUrlBytes(urlSpec));
     }
-    public List<String> fetchItems() {
-        List<String> items = new ArrayList<String>();
+    public Map<String,String> fetchItems() {
+        Map<String,String> items = new TreeMap<String,String>();
         try {
             String url = Uri.parse("http://d.yimg.com/aq/autoc")
                     .buildUpon()
@@ -79,16 +82,16 @@ public class FetchData {
         Log.i(TAG,"Receive symbol list: " + items);
         return items;
     }
-    private void parseItems(List<String> items, JSONObject jsonBody)
+    private void parseItems(Map<String,String> items, JSONObject jsonBody)
             throws IOException, JSONException {
         JSONObject object = jsonBody.getJSONObject("ResultSet");
         JSONArray array = object.getJSONArray("Result");
         for (int i = 0; i < array.length();i++) {
-            if (i>=3) {
+            if (i>3) {
                 break;
             }
             JSONObject symbolObject = array.getJSONObject(i);
-            items.add(symbolObject.getString("symbol"));
+            items.put(symbolObject.getString("name"),symbolObject.getString("symbol"));
         }
     }
 

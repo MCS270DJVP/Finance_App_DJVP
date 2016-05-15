@@ -11,12 +11,14 @@ import com.example.dennis.mutualfund.R;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import yahoofinance.Stock;
 import yahoofinance.YahooFinance;
 import yahoofinance.histquotes.HistoricalQuote;
+import yahoofinance.histquotes.Interval;
 
 public class FetchDataForAdd extends AsyncTask<String,Void,Fund> {
     private String mTickerTitle;
@@ -45,7 +47,27 @@ public class FetchDataForAdd extends AsyncTask<String,Void,Fund> {
             //fund.setStockValue(mStockPrice);
             if (mStockPrice !=null) {
                 fund.setStockValue(mStockPrice.doubleValue());
+                try {
+                    List<Double> mHistoricalPrices = new ArrayList<Double>();
+                    Calendar from = Calendar.getInstance();
+                    Calendar to = Calendar.getInstance();
+                    from.add(Calendar.YEAR, -1);
+                    Stock stocks = YahooFinance.get(mTickerTitle,from,to, Interval.DAILY);
+                    List<HistoricalQuote> mQuotes = stocks.getHistory();
+                    for (HistoricalQuote quote : mQuotes) {
+                        if (quote != null) {
+                            mHistoricalPrices.add(quote.getAdjClose().doubleValue());
+                        }
+                    }
+
+                    fund.setTime(Calendar.getInstance());
+                    fund.setHistoricalPrices(mHistoricalPrices);
+                    //FundLab.get(mContext).updateFund(fund);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
+
             /*set the time when the fund is added*/
             fund.setTime(Calendar.getInstance());
         } catch (IOException e) {
