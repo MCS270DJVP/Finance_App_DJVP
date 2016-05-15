@@ -70,4 +70,17 @@ public class Fund implements Serializable {
         return mCalendar;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Fund) {
+            Fund f = (Fund) o;
+            return mId.equals(f.getId());
+        }
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return mId.hashCode();
+    }
 }
