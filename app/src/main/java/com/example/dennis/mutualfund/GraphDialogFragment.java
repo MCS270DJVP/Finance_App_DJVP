@@ -51,9 +51,9 @@ public class GraphDialogFragment extends DialogFragment  {
                 size++;
             }
         }
-        for (Double price: mHistoricalPrices) {
-            if (price !=null) {
-                series.appendData(new DataPoint(count,price),true,size);
+        for (int i = mHistoricalPrices.size()-1;i>=0;i--) {
+            if (mHistoricalPrices.get(i) !=null) {
+                series.appendData(new DataPoint(count,mHistoricalPrices.get(i)),true,size);
                 count++;
             }
         }
