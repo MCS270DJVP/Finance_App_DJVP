@@ -9,6 +9,7 @@
     <string name="invalid_ticker">Invalid ticker</string>
 
     <string name="remove_stock">Remove Stock</string>
+    <string name="stock_comparison">Stock Comparison Calculator</string>
 
 
     <string-array name="list_item_weight_spinner">

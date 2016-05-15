@@ -16,29 +16,33 @@
             android:id="@+id/list_item_ticker_textview0"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:background="@color/colorAccent"
+
             android:textColor="#000000"
             android:padding="20dp"
-            android:gravity="center"/>
-
+            android:gravity="center"
+            android:textSize="20dp"/>
+        <!--android:background="@color/colorAccent"-->
         <TextView
             android:id="@+id/list_item_ticker_textview1"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:background="@color/colorPrimary"
+
             android:textColor="#000000"
             android:padding="20dp"
-            android:gravity="center"/>
-
+            android:gravity="center"
+            android:textSize="20dp"/>
+        <!--android:background="@color/colorPrimary"-->
         <TextView
             android:id="@+id/list_item_ticker_textview2"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:background="@color/colorPrimaryDark"
-            android:textColor="#000000"
+            android:textColor="@color/colorWhite"
+            android:background="@color/Cyan500"
             android:padding="20dp"
-            android:gravity="center"/>
-
+            android:gravity="center"
+            android:textSize="20dp"
+            android:textStyle="bold"/>
+        <!--android:background="@color/colorPrimaryDark"-->
     </TableRow>
     <View
         android:layout_width="fill_parent"
