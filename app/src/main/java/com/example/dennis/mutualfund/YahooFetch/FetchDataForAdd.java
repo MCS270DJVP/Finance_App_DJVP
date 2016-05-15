@@ -23,8 +23,8 @@ import yahoofinance.histquotes.Interval;
 public class FetchDataForAdd extends AsyncTask<String,Void,Fund> {
     private String mTickerTitle;
     private Context mContext;
-    private BigDecimal mStockPrice;
     private Runnable mContinuation;
+    private BigDecimal mStockPrice;
 
     private static final String TAG = "TAG";
     public FetchDataForAdd(Context context, String tickerTitle, Runnable continuation) {
@@ -45,13 +45,14 @@ public class FetchDataForAdd extends AsyncTask<String,Void,Fund> {
             Stock stock = YahooFinance.get(mTickerTitle);
             mStockPrice = stock.getQuote().getPrice();
             if (mStockPrice !=null) {
-                fund.setStockValue(mStockPrice.doubleValue());
+
                 try {
                     List<Double> mHistoricalPrices = new ArrayList<Double>();
                     Calendar from = Calendar.getInstance();
                     Calendar to = Calendar.getInstance();
                     from.add(Calendar.YEAR, -1);
                     Stock stocks = YahooFinance.get(mTickerTitle,from,to, Interval.DAILY);
+
                     List<HistoricalQuote> mQuotes = stocks.getHistory();
                     for (HistoricalQuote quote : mQuotes) {
                         if (quote != null) {
@@ -59,6 +60,7 @@ public class FetchDataForAdd extends AsyncTask<String,Void,Fund> {
                         }
                     }
                     fund.setTime(Calendar.getInstance());
+                    fund.setStockValue(mStockPrice.doubleValue());
                     fund.setHistoricalPrices(mHistoricalPrices);
                     //FundLab.get(mContext).updateFund(fund);
                 } catch (IOException e) {
