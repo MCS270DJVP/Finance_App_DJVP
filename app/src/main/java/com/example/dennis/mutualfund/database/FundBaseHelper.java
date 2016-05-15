@@ -19,6 +19,7 @@ public class FundBaseHelper extends SQLiteOpenHelper {
         db.execSQL("create table " + FundTable.NAME + "(" +
                 "_id integer primary key autoincrement, " +
                 FundTable.Cols.UUID + ", " +
+                FundTable.Cols.STOCKPRICE+ ", "+
                 FundTable.Cols.TICKER + ", " +
                 FundTable.Cols.WEIGHT + ", " +
                 FundTable.Cols.TIME + ", " +

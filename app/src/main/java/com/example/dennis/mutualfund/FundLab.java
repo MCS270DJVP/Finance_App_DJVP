@@ -88,7 +88,9 @@ public class FundLab {
     }
     private static ContentValues getContentValues(Fund fund) {
         ContentValues values = new ContentValues();
+
         values.put(FundTable.Cols.UUID, fund.getId().toString());
+        values.put(FundTable.Cols.STOCKPRICE,fund.getStockValue());
         values.put(FundTable.Cols.TICKER, fund.getTicker());
         values.put(FundTable.Cols.WEIGHT, fund.getWeight());
         Gson gson = new Gson();

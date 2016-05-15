@@ -22,7 +22,7 @@ public class FundCursorWrapper extends CursorWrapper {
         int weight = getInt(getColumnIndex(FundTable.Cols.WEIGHT));
         /*return the json object and convert it back to a list*/
         String hpricesString = getString(getColumnIndex(FundTable.Cols.HPRICES));
-
+        double stockPrice = getDouble(getColumnIndex(FundTable.Cols.STOCKPRICE));
         long currentTime = getLong(getColumnIndex(FundTable.Cols.TIME));
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(currentTime);
@@ -32,6 +32,7 @@ public class FundCursorWrapper extends CursorWrapper {
         List<Double> historicalPrices = gson.fromJson(hpricesString,ArrayList.class);
 
         Fund fund = new Fund(UUID.fromString(uuidString));
+        fund.setStockValue(stockPrice);
         fund.setTicker(ticker);
         fund.setWeight(weight);
         fund.setHistoricalPrices(historicalPrices);
