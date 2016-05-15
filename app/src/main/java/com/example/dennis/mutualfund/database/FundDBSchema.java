@@ -6,6 +6,7 @@ public class FundDBSchema {
 
         public static final class Cols {
             public static final String UUID = "uuid";
+            public static final String STOCKPRICE = "stockPrice";
             public static final String TICKER = "ticker";
             public static final String WEIGHT = "weight";
             public static final String HPRICES ="hprices";
