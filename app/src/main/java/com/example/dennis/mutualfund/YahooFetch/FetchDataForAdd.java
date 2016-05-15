@@ -44,7 +44,6 @@ public class FetchDataForAdd extends AsyncTask<String,Void,Fund> {
             fund.setTicker(mTickerTitle);
             Stock stock = YahooFinance.get(mTickerTitle);
             mStockPrice = stock.getQuote().getPrice();
-            //fund.setStockValue(mStockPrice);
             if (mStockPrice !=null) {
                 fund.setStockValue(mStockPrice.doubleValue());
                 try {
@@ -59,7 +58,6 @@ public class FetchDataForAdd extends AsyncTask<String,Void,Fund> {
                             mHistoricalPrices.add(quote.getAdjClose().doubleValue());
                         }
                     }
-
                     fund.setTime(Calendar.getInstance());
                     fund.setHistoricalPrices(mHistoricalPrices);
                     //FundLab.get(mContext).updateFund(fund);

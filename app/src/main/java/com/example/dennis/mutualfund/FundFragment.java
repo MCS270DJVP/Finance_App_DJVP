@@ -208,16 +208,24 @@ public class FundFragment extends Fragment{
     private class FundHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private Fund mFund;
         private TextView mTickerTextView;
+        private TextView mUndoDeleteBackround;
         private Spinner mSpinner;
         private TextView mSpinnerText;
-        private TextView mUndoButton;
+        private Button mUndoButton;
+        private Button mGraphView;
         private CardView mCardView;
+        private TextView mPriceField;
         private ImageButton mDeleteButton;
         public FundHolder(View itemView){
             super(itemView);
             itemView.setOnClickListener(this);
-            mUndoButton = (TextView) itemView.findViewById(R.id.undo_button);
+            mGraphView = (Button) itemView.findViewById(R.id.graph_button);
+            //mGraphView.setOnClickListener();
+            mPriceField = (TextView) itemView.findViewById(R.id.price_display);
+            mUndoButton = (Button) itemView.findViewById(R.id.undo_button);
             mUndoButton.setVisibility(View.GONE);
+            mUndoDeleteBackround = (TextView) itemView.findViewById(R.id.undoDeleteBackround);
+            mUndoDeleteBackround.setVisibility(View.GONE);
             mDeleteButton = (ImageButton) itemView.findViewById(R.id.delete_button);
             mDeleteButton.setVisibility(View.GONE);
             mSpinnerText = (TextView) itemView.findViewById(R.id.spinner_text);
@@ -243,9 +251,7 @@ public class FundFragment extends Fragment{
                         mSpinnerText.setVisibility(View.VISIBLE);
                     }
                     FundLab.get(getActivity()).updateFund(mFund);
-
                 }
-
                 public void onNothingSelected(AdapterView<?> parent) {
                     return;
                 }
@@ -257,18 +263,14 @@ public class FundFragment extends Fragment{
             mFund = fund;
             mSpinner.setSelection(mFund.getWeight());
             mTickerTextView.setText(mFund.getTicker().toUpperCase());
-            if (mFund.getStockValue()!=null ) {
-                mPriceField.setText(mFund.getStockValue().toString());
-            }
+            mPriceField.setText("$"+String.valueOf(mFund.getStockValue()));
+
         }
         @Override
         public void onClick(View v) {
             if (!isConnectedtoInternet()) dialogMessage("No Internet Connection!");
-            else {
-                DialogFragment fragment = GraphDialogFragment.newInstance(mFund);
-                FragmentManager manager = getFragmentManager();
-                fragment.show(manager,"NULL");
-            }
+            else
+                new FetchDataForGraph(getActivity(),getFragmentManager(),mFund).execute();
         }
     }
 
@@ -295,7 +297,11 @@ public class FundFragment extends Fragment{
             if (fundsPendingRemoval.contains(fund)) {
                 holder.mCardView.setCardBackgroundColor(Color.parseColor("#D32F2F"));
                 holder.mTickerTextView.setVisibility(View.GONE);
+                holder.mSpinnerText.setVisibility(View.GONE);
+                holder.mGraphView.setVisibility(View.GONE);
+                holder.mPriceField.setVisibility(View.GONE);
                 holder.mSpinner.setVisibility(View.GONE);
+                holder.mUndoDeleteBackround.setVisibility(View.VISIBLE);
                 holder.mUndoButton.setVisibility(View.VISIBLE);
                 holder.mUndoButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -318,8 +324,11 @@ public class FundFragment extends Fragment{
                 });
             } else {
                 holder.itemView.setBackgroundColor(Color.WHITE);
+                holder.mPriceField.setVisibility(View.VISIBLE);
+                holder.mSpinnerText.setVisibility(View.VISIBLE);
                 holder.mTickerTextView.setVisibility(View.VISIBLE);
                 holder.mSpinner.setVisibility(View.VISIBLE);
+                holder.mGraphView.setVisibility(View.VISIBLE);
             }
         }
         @Override
