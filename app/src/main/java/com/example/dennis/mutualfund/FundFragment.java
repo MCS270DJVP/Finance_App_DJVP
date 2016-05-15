@@ -206,7 +206,7 @@ public class FundFragment extends Fragment{
         savedInstanceState.putIntArray(KEY_SPINNERS, spinners);
     }
 
-    private class FundHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    private class FundHolder extends RecyclerView.ViewHolder {
         private Fund mFund;
         private TextView mTickerTextView;
         private TextView mUndoDeleteBackround;
@@ -219,9 +219,7 @@ public class FundFragment extends Fragment{
         private ImageButton mDeleteButton;
         public FundHolder(View itemView){
             super(itemView);
-            itemView.setOnClickListener(this);
             mGraphView = (Button) itemView.findViewById(R.id.graph_button);
-            //mGraphView.setOnClickListener();
             mPriceField = (TextView) itemView.findViewById(R.id.price_display);
             mUndoButton = (Button) itemView.findViewById(R.id.undo_button);
             mUndoButton.setVisibility(View.GONE);
@@ -265,13 +263,15 @@ public class FundFragment extends Fragment{
             mSpinner.setSelection(mFund.getWeight());
             mTickerTextView.setText(mFund.getTicker().toUpperCase());
             mPriceField.setText("$"+String.valueOf(mFund.getStockValue()));
+            mGraphView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!isConnectedtoInternet()) dialogMessage("No Internet Connection!");
+                    else
+                        new FetchDataForGraph(getActivity(),getFragmentManager(),mFund).execute();
+                }
+            });
 
-        }
-        @Override
-        public void onClick(View v) {
-            if (!isConnectedtoInternet()) dialogMessage("No Internet Connection!");
-            else
-                new FetchDataForGraph(getActivity(),getFragmentManager(),mFund).execute();
         }
     }
 

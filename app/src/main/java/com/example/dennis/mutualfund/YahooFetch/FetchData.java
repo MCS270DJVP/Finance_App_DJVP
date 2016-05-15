@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -21,6 +22,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import yahoofinance.Stock;
+import yahoofinance.YahooFinance;
 
 /**
  * Created by huyviet1995 on 4/28/16.
@@ -91,7 +95,9 @@ public class FetchData {
                 break;
             }
             JSONObject symbolObject = array.getJSONObject(i);
-            items.put(symbolObject.getString("name"),symbolObject.getString("symbol"));
+            String symbol = symbolObject.getString("symbol");
+            if (symbol.length()<=5)
+            items.put(symbolObject.getString("name"),symbol);
         }
     }
 

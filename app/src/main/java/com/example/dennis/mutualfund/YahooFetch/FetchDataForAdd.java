@@ -44,7 +44,7 @@ public class FetchDataForAdd extends AsyncTask<String,Void,Fund> {
             fund.setTicker(mTickerTitle);
             Stock stock = YahooFinance.get(mTickerTitle);
             mStockPrice = stock.getQuote().getPrice();
-            if (mStockPrice !=null) {
+            if (mStockPrice !=null || mStockPrice.doubleValue() == 0) {
 
                 try {
                     List<Double> mHistoricalPrices = new ArrayList<Double>();
