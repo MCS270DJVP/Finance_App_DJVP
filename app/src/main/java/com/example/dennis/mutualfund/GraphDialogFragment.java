@@ -1,6 +1,7 @@
 package com.example.dennis.mutualfund;
 
 import android.app.Dialog;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
@@ -57,6 +58,7 @@ public class GraphDialogFragment extends DialogFragment  {
                 count++;
             }
         }
+        series.setColor(Color.parseColor("#00BCD4"));
         graph.addSeries(series);
         Viewport viewport = graph.getViewport();
         viewport.setYAxisBoundsManual(true);
@@ -65,9 +67,10 @@ public class GraphDialogFragment extends DialogFragment  {
         viewport.setXAxisBoundsManual(true);
         viewport.setScrollable(true);
 
+
         return new AlertDialog.Builder(getActivity())
                 .setView(v)
-                .setTitle("Historical quotes")
+                .setTitle("Historical quotes for " + mFund.getTicker())
                 .setPositiveButton(R.string.positive_button,null)
                 .create();
     }

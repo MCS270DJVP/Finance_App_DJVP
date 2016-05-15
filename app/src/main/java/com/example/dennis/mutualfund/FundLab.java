@@ -93,6 +93,7 @@ public class FundLab {
         values.put(FundTable.Cols.STOCKPRICE,fund.getStockValue());
         values.put(FundTable.Cols.TICKER, fund.getTicker());
         values.put(FundTable.Cols.WEIGHT, fund.getWeight());
+
         Gson gson = new Gson();
         /*there is no way to put a list into the SQL database
         * so the list of historical prices should be converted to a json object

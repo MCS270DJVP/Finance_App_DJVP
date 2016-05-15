@@ -15,6 +15,7 @@ public class Fund implements Serializable {
     private List<Double> mHistoricalPrices;
     private int mWeight;
     private Calendar mCalendar;
+    private Calendar mCalculateTime;
 
     public Fund() {
         mId = UUID.randomUUID();
@@ -68,6 +69,20 @@ public class Fund implements Serializable {
 
     public Calendar getTime() {
         return mCalendar;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Fund) {
+            Fund f = (Fund) o;
+            return mId.equals(f.getId());
+        }
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return mId.hashCode();
     }
 
 }
