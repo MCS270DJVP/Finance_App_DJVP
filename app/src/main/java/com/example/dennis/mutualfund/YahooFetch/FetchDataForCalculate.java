@@ -38,7 +38,14 @@ public class FetchDataForCalculate extends AsyncTask<List<Fund>, Void,List<Fund>
         from.add(Calendar.YEAR, -1);
         if (!mFunds.isEmpty()) {
             Calendar currentTime = Calendar.getInstance();
-            Calendar pastTime = mFunds.get(0).getTime();
+            Fund save = mFunds.get(0);
+            for (Fund fund:mFunds) {
+                if (fund.getTime().getTimeInMillis() < save.getTime().getTimeInMillis()) {
+                    save = fund;
+                }
+            }
+
+            Calendar pastTime = save.getTime();
             /*check if the current time is after the time when historical prices were fetched by one day
             * or after the trading market is closed at 4pm of the same day
             *If that is the case, update new data*/

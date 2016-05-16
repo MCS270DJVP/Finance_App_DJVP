@@ -8,32 +8,42 @@
 
     android:clickable="true">
     <!--android:foreground="?android:attr/selectableItemBackground"-->
-        <android.support.v7.widget.CardView
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    <android.support.v7.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:clickable="true"
+        card_view:cardElevation="6dp">
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:clickable="true"
-            card_view:cardElevation="5dp">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/Cyan500">
+            android:layout_height="match_parent"
+            android:background="@color/Cyan500">
             <AutoCompleteTextView
                 android:id="@+id/ticker_text"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:layout_marginRight="8dp"
+                android:layout_marginLeft="8dp"
+                android:textColor="@color/colorWhite"
                 android:imeOptions="actionSearch"
+                android:textStyle="bold"
                 android:singleLine="true"
+                android:backgroundTint="@color/colorWhite"
+                android:textColorHint="@color/colorWhite"
                 android:hint="@string/ticker_hint"/>
             <Button
                 android:id="@+id/calculate_button"
+                android:layout_marginRight="8dp"
+                android:background="@android:color/transparent"
+                android:textColor="@color/colorWhite"
+                android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/calculate_button"/>
-            </LinearLayout>
-        </android.support.v7.widget.CardView>
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
@@ -41,6 +51,6 @@
         android:layout_height="match_parent"
         android:background="@color/colorWhite"
         android:layout_marginTop="60dp"/>
-        <!--android:background="@color/colorPrimaryDark"-->
+    <!--android:background="@color/colorPrimaryDark"-->
 
 </FrameLayout>
