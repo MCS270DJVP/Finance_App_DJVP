@@ -111,26 +111,31 @@ public class FundFragment extends Fragment{
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event){
                 if(actionId == EditorInfo.IME_ACTION_SEARCH) {
                     if (isConnectedtoInternet()) {
-                        mTickerTitle = mTickerField.getText().toString().trim().toUpperCase();
+                        if(calcEnabled) {
+                            mTickerTitle = mTickerField.getText().toString().trim().toUpperCase();
                     /* Checks for duplicate Ticker. Pops up dialog if Ticker already exists */
-                        if (isRepeatString(mTickerTitle)) {
-                            dialogMessage("Ticker already exists");
-                        } else if (!isEmpty(mTickerField) && isValidString(mTickerTitle)) {
-                            disableCalculate();
-                            lockScreenOrientation();
-                            new FetchDataForAdd(getActivity(), mTickerTitle,
-                                    new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            enableCalculate();
-                                            unlockScreenOrientation();
-                                            updateUI();
+                            if (isRepeatString(mTickerTitle)) {
+                                dialogMessage("Ticker already exists");
+                            } else if (!isEmpty(mTickerField) && isValidString(mTickerTitle)) {
+                                disableCalculate();
+                                lockScreenOrientation();
+                                new FetchDataForAdd(getActivity(), mTickerTitle,
+                                        new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                enableCalculate();
+                                                unlockScreenOrientation();
+                                                updateUI();
+                                            }
                                         }
-                                    }
-                            ).execute();
-                            mTickerField.setText("");
-                        } else if (!isValidString(mTickerTitle)){
-                            dialogMessage ("Invalid Ticker");
+                                ).execute();
+                                mTickerField.setText("");
+                            } else if (!isValidString(mTickerTitle)) {
+                                dialogMessage("Invalid Ticker");
+                            }
+                        } else {
+                            Toast.makeText(getActivity(), "Please wait a moment", Toast.LENGTH_SHORT)
+                                    .show();
                         }
                     } else {
                         dialogMessage("No Internet access");
@@ -146,19 +151,18 @@ public class FundFragment extends Fragment{
         mCalculate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                disableCalculate();
-                lockScreenOrientation();
-                new FetchDataForCalculate(getActivity(), new Runnable() {
-                    @Override
-                    public void run() {
+                    disableCalculate();
+                    lockScreenOrientation();
+                    new FetchDataForCalculate(getActivity(), new Runnable() {
+                        @Override
+                        public void run() {
 
-                        Intent intent = FundCalculatorActivity.newIntent(getActivity());
-                        startActivity(intent);
-                        enableCalculate();
-                        unlockScreenOrientation();
-                    }
-                }).execute();
-
+                            Intent intent = FundCalculatorActivity.newIntent(getActivity());
+                            startActivity(intent);
+                            enableCalculate();
+                            unlockScreenOrientation();
+                        }
+                    }).execute();
             }
         });
 
