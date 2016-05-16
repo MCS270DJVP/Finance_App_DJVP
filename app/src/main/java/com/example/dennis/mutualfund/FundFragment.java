@@ -277,18 +277,20 @@ public class FundFragment extends Fragment{
                 @Override
                 public void onClick(View v) {
                     /*No longer need to check for updated information*/
-                    lockScreenOrientation();
-                    disableCalculate();
-                    new FetchDataForGraph(getActivity(), mFund, new Runnable() {
-                        @Override
-                        public void run() {
-                            FragmentManager manager = getFragmentManager();
-                            GraphDialogFragment fragment = GraphDialogFragment.newInstance(mFund);
-                            fragment.show(manager,"NULL");
-                            unlockScreenOrientation();
-                            enableCalculate();
-                        }
-                    }).execute();
+                    if (calcEnabled) {
+                        lockScreenOrientation();
+                        disableCalculate();
+                        new FetchDataForGraph(getActivity(), mFund, new Runnable() {
+                            @Override
+                            public void run() {
+                                FragmentManager manager = getFragmentManager();
+                                GraphDialogFragment fragment = GraphDialogFragment.newInstance(mFund);
+                                fragment.show(manager, "NULL");
+                                unlockScreenOrientation();
+                                enableCalculate();
+                            }
+                        }).execute();
+                    }
 
                 }
             });
@@ -370,6 +372,9 @@ public class FundFragment extends Fragment{
         public void pendingRemoval(int position) {
             final Fund fund = mFunds.get(position);
             if (!fundsPendingRemoval.contains(fund)) {
+                //CHECK THIS AREA
+
+
                 fundsPendingRemoval.add(fund);
                 // this will redraw row in "undo" state
                 notifyItemChanged(position);

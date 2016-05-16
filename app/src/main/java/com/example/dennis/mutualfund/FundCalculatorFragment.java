@@ -86,15 +86,16 @@ public class FundCalculatorFragment extends Fragment {
         int THOUSAND = 1000;
         int ratioListSize;
         if (overweight.size() >= underweight.size())
-            ratioListSize = underweight.size();
-        else ratioListSize = overweight.size();
+            ratioListSize = overweight.size();
+        else ratioListSize = underweight.size();
+
         double[] ratioList = new double[ratioListSize];
 
         for (int i = 0; i < ratioListSize; i++) {
             Double a = overweight.get(i);
             Double b = underweight.get(i);
             // Divide with 3 digits after decimal
-            Double ratio = (double) Math.round(a/b * THOUSAND) / THOUSAND;
+            Double ratio = (double) Math.round((a/b) * THOUSAND) / THOUSAND;
             ratioList[i] = ratio;
         }
 
@@ -106,6 +107,7 @@ public class FundCalculatorFragment extends Fragment {
 
         // Returns the ranking of the attractiveness
         int ratioPosition = Arrays.binarySearch(ratioList, presentRatio) + ONE;
+
         return ratioPosition;
     }
 
@@ -130,6 +132,7 @@ public class FundCalculatorFragment extends Fragment {
             mTextView1.setText(mTCO.getUnderweightTicker().toUpperCase());
             double likabilityPercent = Math.round((mTCO.getlikabilityValue()*10000)/totalOpenMarketDays)/100.0;
             mTextView2.setText(Double.toString(likabilityPercent)+"%");
+
         }
 
         @Override
