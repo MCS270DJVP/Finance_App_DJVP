@@ -113,7 +113,7 @@
                 android:background="@android:color/transparent"
                 android:text="Historical prices"
                 android:paddingRight="25dp"
-                android:textColor="@color/colorBlack"
+                android:textColor="@color/colorGrey"
                 android:textStyle="bold"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentRight="true"

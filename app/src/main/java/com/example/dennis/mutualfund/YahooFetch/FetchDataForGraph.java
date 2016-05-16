@@ -17,18 +17,18 @@ import yahoofinance.YahooFinance;
 import yahoofinance.histquotes.HistoricalQuote;
 import yahoofinance.histquotes.Interval;
 
-public class FetchDataForGraph extends AsyncTask<Fund,Void,DialogFragment>{
+public class FetchDataForGraph extends AsyncTask<Fund,Void,Fund>{
     private Fund mFund;
     private Context mContext;
     private List<Double> mHistoricalPrices;
-    private FragmentManager mManager;
-    public FetchDataForGraph (Context context,FragmentManager manager, Fund fund) {
-        mManager = manager;
+    private Runnable mContinuation;
+    public FetchDataForGraph (Context context,Fund fund, Runnable continuation) {
         mFund = fund;
         mContext = context;
+        mContinuation = continuation;
     }
     @Override
-    protected DialogFragment doInBackground(Fund... params) {
+    protected Fund doInBackground(Fund... params) {
         Calendar currentTime = Calendar.getInstance();
         Calendar pastTime = mFund.getTime();
         /*check if the current time is after the time when historical prices were fetched by one day
@@ -39,7 +39,7 @@ public class FetchDataForGraph extends AsyncTask<Fund,Void,DialogFragment>{
                 && (currentTime.get(Calendar.HOUR_OF_DAY) >=16 && pastTime.get(Calendar.HOUR_OF_DAY ) >= 16
                 || (currentTime.get(Calendar.HOUR_OF_DAY) <16 && pastTime.get(Calendar.HOUR_OF_DAY ) < 16));
         if (mFund.getHistoricalPrices() !=null && isSameDate) {
-            return GraphDialogFragment.newInstance(mFund);
+            return mFund;
         }
         else {
             Calendar from = Calendar.getInstance();
@@ -61,10 +61,10 @@ public class FetchDataForGraph extends AsyncTask<Fund,Void,DialogFragment>{
                 e.printStackTrace();
             }
         }
-        return GraphDialogFragment.newInstance(mFund);
+        return mFund;
     }
     @Override
-    protected void onPostExecute(DialogFragment dialogFragment) {
-        dialogFragment.show(mManager,"NULL");
+    protected void onPostExecute(Fund fund) {
+        mContinuation.run();
     }
 }

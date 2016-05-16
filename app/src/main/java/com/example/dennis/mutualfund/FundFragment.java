@@ -83,8 +83,6 @@ public class FundFragment extends Fragment{
     @Override
     public void onCreate(Bundle savedInstancestate){
         super.onCreate(savedInstancestate);
-        super.setHasOptionsMenu(true);
-        startAlarm();
     }
 
     @Override
@@ -144,11 +142,23 @@ public class FundFragment extends Fragment{
         });
         enableCalculate();
         mCalculate = (Button) v.findViewById(R.id.calculate_button);
+        /*no longer need to check for data fetching calculate*/
         mCalculate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = FundCalculatorActivity.newIntent(getActivity());
-                startActivity(intent);
+                disableCalculate();
+                lockScreenOrientation();
+                new FetchDataForCalculate(getActivity(), new Runnable() {
+                    @Override
+                    public void run() {
+
+                        Intent intent = FundCalculatorActivity.newIntent(getActivity());
+                        startActivity(intent);
+                        enableCalculate();
+                        unlockScreenOrientation();
+                    }
+                }).execute();
+
             }
         });
 
@@ -179,7 +189,7 @@ public class FundFragment extends Fragment{
                         right = itemView.getRight();
                         left = right + dX;
                     }
-                    c.drawRect(left, itemView.getTop(), right, itemView.getBottom(), warningPaint);
+                    //c.drawRect(left, itemView.getTop(), right, itemView.getBottom(), warningPaint);
                 }
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
             }
@@ -266,9 +276,20 @@ public class FundFragment extends Fragment{
             mGraphView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (!isConnectedtoInternet()) dialogMessage("No Internet Connection!");
-                    else
-                        new FetchDataForGraph(getActivity(),getFragmentManager(),mFund).execute();
+                    /*No longer need to check for updated information*/
+                    lockScreenOrientation();
+                    disableCalculate();
+                    new FetchDataForGraph(getActivity(), mFund, new Runnable() {
+                        @Override
+                        public void run() {
+                            FragmentManager manager = getFragmentManager();
+                            GraphDialogFragment fragment = GraphDialogFragment.newInstance(mFund);
+                            fragment.show(manager,"NULL");
+                            unlockScreenOrientation();
+                            enableCalculate();
+                        }
+                    }).execute();
+
                 }
             });
 
@@ -300,9 +321,11 @@ public class FundFragment extends Fragment{
                 holder.mTickerTextView.setVisibility(View.GONE);
                 holder.mSpinnerText.setVisibility(View.GONE);
                 holder.mGraphView.setVisibility(View.GONE);
+
                 holder.mPriceField.setVisibility(View.GONE);
                 holder.mSpinner.setVisibility(View.GONE);
-                holder.mUndoDeleteBackround.setVisibility(View.VISIBLE);
+                holder.mUndoDeleteBackround.setVisibility(View.GONE);
+
                 holder.mUndoButton.setVisibility(View.VISIBLE);
                 holder.mUndoButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -325,11 +348,14 @@ public class FundFragment extends Fragment{
                 });
             } else {
                 holder.itemView.setBackgroundColor(Color.WHITE);
+                holder.mCardView.setCardBackgroundColor(Color.WHITE);
                 holder.mPriceField.setVisibility(View.VISIBLE);
                 holder.mSpinnerText.setVisibility(View.VISIBLE);
                 holder.mTickerTextView.setVisibility(View.VISIBLE);
                 holder.mSpinner.setVisibility(View.VISIBLE);
                 holder.mGraphView.setVisibility(View.VISIBLE);
+                holder.mUndoButton.setVisibility(View.GONE);
+                holder.mDeleteButton.setVisibility(View.GONE);
             }
         }
         @Override
@@ -473,18 +499,4 @@ public class FundFragment extends Fragment{
         }
     }
 
-    /*All the codes down here are for the alarm manager*/
-    public void startAlarm() {
-        Intent alarmIntent = new Intent(getActivity(),AlarmReceiver.class);
-        pendingIntent = PendingIntent.getBroadcast(getActivity(),0,alarmIntent,PendingIntent.FLAG_UPDATE_CURRENT);
-        manager = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.HOUR_OF_DAY, 16);
-        manager.setInexactRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY, pendingIntent);
-        Toast.makeText(getActivity(), "Alarm Set", Toast.LENGTH_SHORT).show();
-    }
-    public void onDismiss(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, int position) {
-        mFundAdapter.remove(viewHolder.getAdapterPosition());
-    }
 }

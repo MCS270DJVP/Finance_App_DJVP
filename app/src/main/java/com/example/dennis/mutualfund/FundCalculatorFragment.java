@@ -99,7 +99,7 @@ public class FundCalculatorFragment extends Fragment {
         }
 
         // Holds the last ratio stored to be searched later
-        double presentRatio = ratioList[ratioListSize - ONE];
+        double presentRatio = ratioList[0];
 
         // Sorts the value in ascending order
         Arrays.sort(ratioList);
