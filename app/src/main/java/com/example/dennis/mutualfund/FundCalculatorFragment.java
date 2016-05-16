@@ -86,8 +86,8 @@ public class FundCalculatorFragment extends Fragment {
         int THOUSAND = 1000;
         int ratioListSize;
         if (overweight.size() >= underweight.size())
-            ratioListSize = overweight.size();
-        else ratioListSize = underweight.size();
+            ratioListSize = underweight.size();
+        else ratioListSize = overweight.size();
 
         double[] ratioList = new double[ratioListSize];
 
