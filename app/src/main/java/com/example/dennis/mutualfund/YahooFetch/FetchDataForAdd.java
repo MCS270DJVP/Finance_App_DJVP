@@ -82,6 +82,7 @@ public class FetchDataForAdd extends AsyncTask<String,Void,Fund> {
         }
         else {
             dialog("Invalid ticker");
+            mContinuation.run();
         }
     }
     private void dialog(String message) {
